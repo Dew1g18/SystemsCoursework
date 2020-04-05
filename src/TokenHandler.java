@@ -34,6 +34,14 @@ public class TokenHandler {
                     options[i]=tokenizer.nextToken();
                 }
                 return new DetailToken(requirement, options);
+
+            case "VOTE_OPTIONS":
+                int howManyVoteOps = tokenizer.countTokens();
+                String[] voteOptions = new String[howManyVoteOps];
+                for(int i = 0; i<howManyVoteOps; i++){
+                    voteOptions[i]=tokenizer.nextToken();
+                }
+                return new VoteOptionsToken(requirement, voteOptions);
         }
         return null;
     }
@@ -70,6 +78,17 @@ class DetailToken extends Token{
         this.requirement = req;
     }
 
+    public String[] getOptions() {
+        return options;
+    }
+}
+
+class VoteOptionsToken extends Token{
+    String[] options;
+    public VoteOptionsToken(String requirement, String[] options){
+        this.requirement= requirement;
+        this.options=options;
+    }
     public String[] getOptions() {
         return options;
     }

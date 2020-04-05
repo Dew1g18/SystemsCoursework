@@ -32,6 +32,10 @@ public class Participant {
             System.out.println("To run a participant, the usage is currently: java Participant <participant port> <coordinator port>");
         }
         try{
+
+            DetailToken details = null;
+            VoteOptionsToken voteOptions =null;
+
             int port = Integer.parseInt(args[0]);
             int coordinator = Integer.parseInt(args[1]);
 
@@ -44,25 +48,28 @@ public class Participant {
 
             msgToCoord.println(("JOIN "+port));
 //            System.out.println(info.readLine());
-            boolean canProceed = false;
+            boolean moreToRead = true;
             TokenHandler tokenHandler = new TokenHandler();
             String incoming;
-            while(!canProceed){
+            while(moreToRead){
                    incoming = msgFromCoord.readLine();
                    Token token = tokenHandler.getToken(incoming);
-                   if (token instanceof DetailToken){
-                       canProceed=true;
+                   if(token instanceof DetailToken){
+                       details = (DetailToken) token;
+                   }else if(token instanceof  VoteOptionsToken){
+                       voteOptions = (VoteOptionsToken) token;
+                   }
+                   if (!details.equals(null)&&!voteOptions.equals(null)){
+                       moreToRead=false;
                    }
             }
 
+            //Now that the detail token has been recieved, I can go ahead and create threads for voting and listening yeah?
 
-
-            //todo: Use this socket to send the join request and get the information the coordinator is meant to send.
-
-
-
-            //todo: Once the previous is complete, open 2 threads, one for looping through other ports and voting, the other for recieving others votes.
-
+            //todo: Test to see that I can actually connect with a coordinator, send & recieve this information
+            //todo: set up rounds, to use the threads to get and send votes
+            //todo: open 2 threads, one for looping through other ports and voting, the other for recieving others votes.
+            //todo: send coordinator back an outcome token!
 
 
         }catch(IOException e){
