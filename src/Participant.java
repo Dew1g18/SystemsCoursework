@@ -1,3 +1,4 @@
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -22,7 +23,9 @@ public class Participant {
      *
      */
 
+
 //    private int port;
+
 
     public static void main(String[] args){
         if(args.length!=2){
@@ -36,16 +39,22 @@ public class Participant {
             Socket socket = new Socket(InetAddress.getLocalHost(), coordinator);
             //todo with PC, check to see if getlocalhost can create the sockets example connection between laptop and pc,
             //has to be done tomorrow as I dont want to wake anyone up with my pc rn.
+            PrintWriter msgCoord = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            BufferedReader info = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            msgCoord.println(("JOIN "+port));
+//            System.out.println(info.readLine());
+
 
             //todo: Use this socket to send the join request and get the information the coordinator is meant to send.
+
+
+
             //todo: Once the previous is complete, open 2 threads, one for looping through other ports and voting, the other for recieving others votes.
 
 
 
-
-
-
-        }catch(Exception e){
+        }catch(IOException e){
             e.printStackTrace();
         }
     }
