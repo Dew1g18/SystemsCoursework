@@ -28,8 +28,10 @@ public class Coordinator {
 
     public void startListening(int port) throws IOException {
         ServerSocket listener = new ServerSocket(port);
+//        System.out.println("server socket open");
         while (true) {
             Socket client = listener.accept();
+//            System.out.println("Socket accepted");
             new ServerThread(client).start();
         }
     }
@@ -46,6 +48,7 @@ public class Coordinator {
 
             portIn = new BufferedReader(new InputStreamReader(port.getInputStream()));
             portOut = new PrintWriter(new OutputStreamWriter(port.getOutputStream()));
+//            System.out.println("ServerThread started");
 
         }
 
@@ -55,9 +58,13 @@ public class Coordinator {
          */
 
         public void run(){
+//            System.out.println("Runnin");
             TokenHandler tokenHandler = new TokenHandler();
             try {
-                Token token = tokenHandler.getToken(portIn.readLine());
+                String in = portIn.readLine();
+//                System.out.println(in);
+                Token token = tokenHandler.getToken(in);
+                System.out.println(token.requirement);
                 //todo: complete this method, its here to register a new socket and then run as a server thread
                 //In its current state it will connect to a single participant and send some dummy data (for testing)
                 if (!(token instanceof JoinToken)) {
@@ -73,7 +80,7 @@ public class Coordinator {
                 portOut.println("DETAILS 0984 1204 2348 9842");
                 portOut.println("VOTE_OPTIONS 2139 2348");
                 portOut.flush();
-                System.out.println("Sent dummy data");
+//                System.out.println("Sent dummy data");
 
             }catch(IOException e){
                 e.printStackTrace();

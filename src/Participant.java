@@ -45,12 +45,15 @@ public class Participant {
 
             ServerSocket listenSocket = new ServerSocket(port);
             Socket socket = new Socket(InetAddress.getLocalHost(), coordinator);
+//            System.out.println("Part opened socket at "+ coordinator);
             //todo with PC, check to see if getlocalhost can create the sockets example connection between laptop and pc,
             //has to be done tomorrow as I dont want to wake anyone up with my pc rn.
             PrintWriter msgToCoord = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
             BufferedReader  msgFromCoord = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
+//            System.out.println("Sedning");
             msgToCoord.println(("JOIN "+port));
+            msgToCoord.flush();
+//            System.out.println("message sent");
 //            System.out.println(info.readLine());
             boolean moreToRead = true;
             TokenHandler tokenHandler = new TokenHandler();
@@ -61,12 +64,14 @@ public class Participant {
                 Token token = tokenHandler.getToken(incoming);
                 if(token instanceof DetailToken){
                     details = (DetailToken) token;
+//                    System.out.println("Made a detail!");
                 }else if(token instanceof  VoteOptionsToken){
                     voteOptions = (VoteOptionsToken) token;
                 }
-                if (!details.equals(null)&&!voteOptions.equals(null)){
+                if (details!=null){
+                    if(voteOptions!=null){
                     moreToRead=false;
-                }
+                }}
             }
             System.out.println("Details: ");
             for (String det : details.getOptions()){
