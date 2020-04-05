@@ -27,6 +27,13 @@ public class TokenHandler {
                 if (tokenizer.hasMoreTokens()) {
                     return new JoinToken(requirement, tokenizer.nextToken());
                 }
+            case "DETAILS":
+                int howManyOps = tokenizer.countTokens();
+                String[] options = new String[howManyOps];
+                for(int i = 0; i<howManyOps; i++){
+                    options[i]=tokenizer.nextToken();
+                }
+                return new DetailToken(requirement, options);
         }
         return null;
     }
@@ -39,6 +46,10 @@ public class TokenHandler {
 //Creating a model for tokens will help me typecast them later on.
 abstract class Token{
     String requirement;
+
+    public String getRequirement() {
+        return requirement;
+    }
 }
 
 
@@ -49,5 +60,17 @@ class JoinToken extends Token{
         this.requirement = req;
         this.port = port;
     }
+}
 
+//Format: Details '[ports]'
+class DetailToken extends Token{
+    String[] options;
+    public DetailToken(String req, String[] options){
+        this.options= options;
+        this.requirement = req;
+    }
+
+    public String[] getOptions() {
+        return options;
+    }
 }

@@ -39,11 +39,22 @@ public class Participant {
             Socket socket = new Socket(InetAddress.getLocalHost(), coordinator);
             //todo with PC, check to see if getlocalhost can create the sockets example connection between laptop and pc,
             //has to be done tomorrow as I dont want to wake anyone up with my pc rn.
-            PrintWriter msgCoord = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-            BufferedReader info = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter msgToCoord = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            BufferedReader  msgFromCoord = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            msgCoord.println(("JOIN "+port));
+            msgToCoord.println(("JOIN "+port));
 //            System.out.println(info.readLine());
+            boolean canProceed = false;
+            TokenHandler tokenHandler = new TokenHandler();
+            String incoming;
+            while(!canProceed){
+                   incoming = msgFromCoord.readLine();
+                   Token token = tokenHandler.getToken(incoming);
+                   if (token instanceof DetailToken){
+                       canProceed=true;
+                   }
+            }
+
 
 
             //todo: Use this socket to send the join request and get the information the coordinator is meant to send.
