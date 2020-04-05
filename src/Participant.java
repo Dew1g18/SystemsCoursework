@@ -57,6 +57,7 @@ public class Participant {
             String incoming;
             while(moreToRead){
                 incoming = msgFromCoord.readLine();
+                System.out.println(incoming);
                 Token token = tokenHandler.getToken(incoming);
                 if(token instanceof DetailToken){
                     details = (DetailToken) token;

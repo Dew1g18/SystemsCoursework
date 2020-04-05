@@ -34,7 +34,9 @@ public class Test {
         Coordinator coordinator = new Coordinator();
         Participant participant = new Participant();
         try {
+            System.out.println("listening starting");
             coordinator.startListening(4200);
+            System.out.println("Participants part");
             participant.runWithThese("6969", "4200");
 
         }catch(IOException e){

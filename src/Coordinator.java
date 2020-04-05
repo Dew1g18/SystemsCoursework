@@ -60,6 +60,20 @@ public class Coordinator {
                 Token token = tokenHandler.getToken(portIn.readLine());
                 //todo: complete this method, its here to register a new socket and then run as a server thread
                 //In its current state it will connect to a single participant and send some dummy data (for testing)
+                if (!(token instanceof JoinToken)) {
+                    portSocket.close();
+                    return;
+                }
+                // Check the client's registration request.
+                if (!(register(portName = ((JoinToken) token).port, portOut))) {
+                    portSocket.close();
+                    return;
+                }
+                //Send dummy data
+                portOut.println("DETAILS 0984 1204 2348 9842");
+                portOut.println("VOTE_OPTIONS 2139 2348");
+                portOut.flush();
+                System.out.println("Sent dummy data");
 
             }catch(IOException e){
                 e.printStackTrace();
