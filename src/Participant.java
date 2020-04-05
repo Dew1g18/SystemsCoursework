@@ -31,13 +31,17 @@ public class Participant {
         if(args.length!=2){
             System.out.println("To run a participant, the usage is currently: java Participant <participant port> <coordinator port>");
         }
-        try{
+        //todo: not sure if the method should actually just be run in main yet, wont take long to put back here if needed,
+        //using method for testing.
+    }
 
+    public void runWithThese(String thisPort, String coordPort){
+        try{
             DetailToken details = null;
             VoteOptionsToken voteOptions =null;
 
-            int port = Integer.parseInt(args[0]);
-            int coordinator = Integer.parseInt(args[1]);
+            int port = Integer.parseInt(thisPort);
+            int coordinator = Integer.parseInt(coordPort);
 
             ServerSocket listenSocket = new ServerSocket(port);
             Socket socket = new Socket(InetAddress.getLocalHost(), coordinator);
@@ -52,16 +56,24 @@ public class Participant {
             TokenHandler tokenHandler = new TokenHandler();
             String incoming;
             while(moreToRead){
-                   incoming = msgFromCoord.readLine();
-                   Token token = tokenHandler.getToken(incoming);
-                   if(token instanceof DetailToken){
-                       details = (DetailToken) token;
-                   }else if(token instanceof  VoteOptionsToken){
-                       voteOptions = (VoteOptionsToken) token;
-                   }
-                   if (!details.equals(null)&&!voteOptions.equals(null)){
-                       moreToRead=false;
-                   }
+                incoming = msgFromCoord.readLine();
+                Token token = tokenHandler.getToken(incoming);
+                if(token instanceof DetailToken){
+                    details = (DetailToken) token;
+                }else if(token instanceof  VoteOptionsToken){
+                    voteOptions = (VoteOptionsToken) token;
+                }
+                if (!details.equals(null)&&!voteOptions.equals(null)){
+                    moreToRead=false;
+                }
+            }
+            System.out.println("Details: ");
+            for (String det : details.getOptions()){
+                System.out.println(det);
+            }
+            System.out.println("\n\nVote Options: ");
+            for (String opt : voteOptions.getOptions()){
+                System.out.println(opt);
             }
 
             //Now that the detail token has been recieved, I can go ahead and create threads for voting and listening yeah?

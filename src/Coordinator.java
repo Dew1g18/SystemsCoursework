@@ -1,4 +1,6 @@
 import java.io.*;
+import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,8 +26,13 @@ public class Coordinator {
     //todo: Above in the final set of parenthesis should be the maxPorts variable if one is to be implemented.
 
 
-
-
+    public void startListening(int port) throws IOException {
+        ServerSocket listener = new ServerSocket(port);
+        while (true) {
+            Socket client = listener.accept();
+            new ServerThread(client).start();
+        }
+    }
 
 
     private class ServerThread extends Thread{
@@ -52,7 +59,7 @@ public class Coordinator {
             try {
                 Token token = tokenHandler.getToken(portIn.readLine());
                 //todo: complete this method, its here to register a new socket and then run as a server thread
-                //Not done yet because I want to go and have a look at how I plan on tackling the participants first
+                //In its current state it will connect to a single participant and send some dummy data (for testing)
 
             }catch(IOException e){
                 e.printStackTrace();

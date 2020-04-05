@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 /**
  * This is just here as a class with a main to quickly manually test to see if some of my things work, for instance here I
  * will check that my TokenHandler is able to compile a Details token nicely before I go through the hassle of implementing
@@ -27,6 +29,17 @@ public class Test {
             System.out.println("Fucked up lmao");
         }
         System.out.println("Detail token test complete");
+
+        System.out.println("Socket info test");
+        Coordinator coordinator = new Coordinator();
+        Participant participant = new Participant();
+        try {
+            coordinator.startListening(4200);
+            participant.runWithThese("6969", "4200");
+
+        }catch(IOException e){
+            e.printStackTrace();
+        }
 
     }
 }
