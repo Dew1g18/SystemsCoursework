@@ -5,6 +5,9 @@ import java.io.IOException;
  * will check that my TokenHandler is able to compile a Details token nicely before I go through the hassle of implementing
  * it and trying to get info across sockets.
  *
+ *  This is not a formal testing class, I do not have a bunch of preset tests with expected outcomes and pass fail
+ *  It is only meant to run the methods and I manually check if the output is correct. If I can be bothered during
+ *  the day time I will update this to include a test harness.
  *
  * ###This should not be submitted###
  */
@@ -12,6 +15,10 @@ import java.io.IOException;
 public class Test {
 
     public static void main(String[] args){
+
+        /**
+         * The following section is for testing TokenHandler's create details method
+         */
 //
 //        System.out.println("Running detail token test:");
 //        String options = "DETAILS 0123 0234 4567 9876";
@@ -30,6 +37,14 @@ public class Test {
 //        }
 //        System.out.println("Detail token test complete");
 
+
+        /**
+         * The following checks the sockets sending the initial data across, (currently relies on the coorinator having
+         * some dummy data set up to send.)
+         *
+         * This will but updated to run a bunch of participants in separate threads to check that the whole sys works,
+         * may migrate elsewhere.
+         */
         System.out.println("Socket info test");
         Coordinator coordinator = new Coordinator();
         Participant participant = new Participant();

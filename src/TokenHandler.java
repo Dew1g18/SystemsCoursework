@@ -23,10 +23,12 @@ public class TokenHandler {
         //gets the first string without space in the bytestream
         //Next we check all the forms it may take and from that, we create the neccesary token
         switch (token1) {
+
             case "JOIN":
                 if (tokenizer.hasMoreTokens()) {
                     return new JoinToken(requirement, tokenizer.nextToken());
                 }
+
             case "DETAILS":
                 int howManyOps = tokenizer.countTokens();
                 String[] options = new String[howManyOps];
@@ -42,8 +44,16 @@ public class TokenHandler {
                     voteOptions[i]=tokenizer.nextToken();
                 }
                 return new VoteOptionsToken(requirement, voteOptions);
+
+            case "VOTE":
+                return new VoteToken(requirement, tokenizer.nextToken(), tokenizer.nextToken());
+
         }
         return null;
+    }
+
+    public VoteToken makeVote(String port, String vote){
+        return (VoteToken) getToken("VOTE "+port+" "+vote);
     }
 
 
@@ -91,5 +101,12 @@ class VoteOptionsToken extends Token{
     }
     public String[] getOptions() {
         return options;
+    }
+}
+
+class VoteToken extends Token{
+    String port, vote;
+    public VoteToken(String requirement, String port, String vote){
+        this.requirement = requirement;
     }
 }
