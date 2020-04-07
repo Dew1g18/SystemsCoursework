@@ -43,7 +43,7 @@ public class Participant {
             int port = Integer.parseInt(thisPort);
             int coordinator = Integer.parseInt(coordPort);
 
-            ServerSocket listenSocket = new ServerSocket(port);
+//            ServerSocket listenSocket = new ServerSocket(port);
             Socket socket = new Socket(InetAddress.getLocalHost(), coordinator);
 //            System.out.println("Part opened socket at "+ coordinator);
             //todo with PC, check to see if getlocalhost can create the sockets example connection between laptop and pc,
@@ -55,9 +55,15 @@ public class Participant {
             msgToCoord.flush();
 //            System.out.println("message sent");
 //            System.out.println(info.readLine());
+
+
             boolean moreToRead = true;
             TokenHandler tokenHandler = new TokenHandler();
             String incoming;
+
+            /**
+             * This gets the initial information from the coordinator
+             */
             while(moreToRead){
                 incoming = msgFromCoord.readLine();
                 System.out.println(incoming);
@@ -82,11 +88,21 @@ public class Participant {
                 System.out.println(opt);
             }
 
+
             //Now that the detail token has been recieved, I can go ahead and create threads for voting and listening yeah?
 
-            //todo: Test to see that I can actually connect with a coordinator, send & recieve this information
             //todo: set up rounds, to use the threads to get and send votes
             //todo: open 2 threads, one for looping through other ports and voting, the other for recieving others votes.
+
+            /**
+             * Now to open a VotingThread and a ListeningThread to get the first round done,
+             * Kill the threads once each round is complete, then once its over I will implement
+             * outcome tokens. The problem with continuing at the moment is I dont know how
+             * participants choose who to vote for.
+             */
+
+
+
             //todo: send coordinator back an outcome token!
 
 
