@@ -1,3 +1,5 @@
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 public class TokenHandler {
@@ -112,8 +114,17 @@ class VoteOptionsToken extends Token{
 }
 
 class VoteToken extends Token{
-    String[] port, vote;
+    String[] ports, votes;
     public VoteToken(String requirement, String[] port, String[] vote){
         this.requirement = requirement;
+        this.ports = port;
+        this.votes = vote;
+    }
+    public Map<String, String> mapPortsToVotes(){
+        Map<String, String> portsToVotes = new HashMap<>();
+        for(int i=0; i<ports.length; i++){
+            portsToVotes.put(ports[i], votes[i]);
+        }
+        return portsToVotes;
     }
 }
