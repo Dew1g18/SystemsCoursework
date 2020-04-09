@@ -50,9 +50,9 @@ public class ListeningThread extends Thread {
                 Token token = tokenHandler.getToken(voterInput.readLine());
                 if (token instanceof VoteToken){
                     VoteToken voteToken = (VoteToken) token;
-                    if (portToVote.get(voteToken.port)!=null ){
+                    if (portToVote.get(voteToken.ports)!=null ){
                         collectedVotes.add(voteToken);
-                        portToVote.put(voteToken.port, voteToken.vote);
+                        portToVote.put(voteToken.ports, voteToken.votes);
                     } }
                 if(waitNo==collectedVotes.size()){
                     finishedCollecting = true;
@@ -68,8 +68,5 @@ public class ListeningThread extends Thread {
         return collectedVotes;
     }
 
-    public void close(){
-
-    }
 
 }
