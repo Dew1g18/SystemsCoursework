@@ -9,6 +9,11 @@ public class VotingThread extends Thread {
 //    private Socket mySocket;
     private VoteToken voteToken;
     private boolean finishedVoting;
+
+    public boolean isFinishedVoting() {
+        return finishedVoting;
+    }
+
     private DetailToken details;
 
     public VotingThread(VoteToken voteToken, DetailToken detailToken){
