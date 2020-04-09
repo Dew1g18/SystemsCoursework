@@ -115,11 +115,23 @@ class VoteOptionsToken extends Token{
 
 class VoteToken extends Token{
     String[] ports, votes;
+    Vote[] voteArray;
     public VoteToken(String requirement, String[] port, String[] vote){
         this.requirement = requirement;
         this.ports = port;
         this.votes = vote;
+        voteArray= makeVoteArray(port.length);
     }
+
+    public Vote[] makeVoteArray(int length){
+        Vote[] make = new Vote[length];
+        for(int i=0; i<length; i++){
+            make[i]=new Vote(Integer.parseInt(ports[i]), votes[i]);
+        }
+        return make;
+    }
+
+
     public Map<String, String> mapPortsToVotes(){
         Map<String, String> portsToVotes = new HashMap<>();
         for(int i=0; i<ports.length; i++){
