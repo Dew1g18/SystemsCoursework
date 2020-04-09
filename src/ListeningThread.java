@@ -13,7 +13,7 @@ public class ListeningThread extends Thread {
     private int waitNo;
     private ArrayList<VoteToken> collectedVotes;
     private boolean finishedCollecting;
-    private Map<String, String> portToVote;
+    private Map<String[], String[]> portToVote;
 
 
     public ListeningThread(ServerSocket socket, int waitNo){
@@ -26,7 +26,7 @@ public class ListeningThread extends Thread {
         return finishedCollecting;
     }
 
-    public Map<String, String> getPortToVote() {
+    public Map<String[], String[]> getPortToVote() {
         return portToVote;
     }
 
@@ -56,6 +56,7 @@ public class ListeningThread extends Thread {
                     } }
                 if(waitNo==collectedVotes.size()){
                     finishedCollecting = true;
+
                 } }
         }catch(IOException e){
             e.printStackTrace();
