@@ -46,10 +46,10 @@ public class TokenHandler {
                 return new VoteOptionsToken(requirement, voteOptions);
 
             case "VOTE":
-                int howManyVotes = tokenizer.countTokens();
-                String[] ports = new String[howManyVotes/2];
-                String[] votes = new String[howManyVotes/2];
-                for(int i=0; i<howManyVotes/2; i++){
+                int howManyVotes = tokenizer.countTokens()/2;
+                String[] ports = new String[howManyVotes];
+                String[] votes = new String[howManyVotes];
+                for(int i=0; i<howManyVotes; i++){
                     ports[i]=tokenizer.nextToken();
                     votes[i]=tokenizer.nextToken();
                 }
