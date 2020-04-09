@@ -48,14 +48,7 @@ public class TokenHandler {
                 return new VoteOptionsToken(requirement, voteOptions);
 
             case "VOTE":
-                int howManyVotes = tokenizer.countTokens()/2;
-                String[] ports = new String[howManyVotes];
-                String[] votes = new String[howManyVotes];
-                for(int i=0; i<howManyVotes; i++){
-                    ports[i]=tokenizer.nextToken();
-                    votes[i]=tokenizer.nextToken();
-                }
-                return new VoteToken(requirement, ports, votes);
+                return new VoteToken(requirement);
 
         }
         return null;
@@ -121,6 +114,18 @@ class VoteToken extends Token{
         this.ports = port;
         this.votes = vote;
         voteArray= makeVoteArray(port.length);
+    }
+
+    public VoteToken(String requirement){
+        StringTokenizer tokenizer = new StringTokenizer(requirement);
+        tokenizer.nextToken();
+        int howManyVotes = tokenizer.countTokens()/2;
+        String[] ports = new String[howManyVotes];
+        String[] votes = new String[howManyVotes];
+        for(int i=0; i<howManyVotes; i++){
+            ports[i]=tokenizer.nextToken();
+            votes[i]=tokenizer.nextToken();
+        }
     }
 
     public Vote[] makeVoteArray(int length){
