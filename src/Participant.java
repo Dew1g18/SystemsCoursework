@@ -49,7 +49,11 @@ public class Participant {
 //        }
 //        return chosen;
 //    }
+    VoteToken stored;
 
+    public Participant(){
+        stored = new VoteToken("VOTE");
+    }
 
     /**
      * following method runs a round. Should be able to handle any round, and comparing the previous
