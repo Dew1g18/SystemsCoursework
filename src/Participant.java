@@ -2,6 +2,9 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Participant {
 
@@ -26,6 +29,26 @@ public class Participant {
 
 //    private int port;
 
+    //This method is for finding the most common vote in a round.
+//    private VoteToken winningVote(ArrayList<VoteToken> votes, String myPort){
+//        TokenHandler tokenHandler = new TokenHandler();
+//        Map<String, Integer> optionToHits = new HashMap<>();
+//        for (VoteToken vote : votes){
+//            if (optionToHits.get(vote.vote)!=null){
+//                optionToHits.put(vote.vote,optionToHits.get(vote.vote)+1);
+//            }else{
+//                optionToHits.put(vote.vote,1);
+//            }
+//        }
+//        VoteToken chosen = votes.get(0);
+//        chosen.port=myPort;
+//        for (String vote : optionToHits.keySet()){
+//            if (optionToHits.get(vote)>optionToHits.get(chosen)){
+//                chosen=tokenHandler.makeVote(myPort, vote);
+//            }
+//        }
+//        return chosen;
+//    }
 
     public static void main(String[] args){
         if(args.length!=2){
