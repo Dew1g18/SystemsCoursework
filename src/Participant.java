@@ -50,6 +50,44 @@ public class Participant {
 //        return chosen;
 //    }
 
+
+    /**
+     * following method runs a round. Should be able to handle any round, and comparing the previous
+     * vVoteToken to the one returned should tell us whether we need to continue with rounds. .
+     */
+    public VoteToken round(ServerSocket socket, int participants, VoteToken myvoteToken, DetailToken details){
+        ListeningThread listeningThread = new ListeningThread(socket, participants);
+        VotingThread votingThread = new VotingThread(myvoteToken, details);
+        listeningThread.start();
+        votingThread.start();
+        boolean canProceed = false;
+        while(!canProceed){
+            try {
+                Thread.sleep(200);
+                if(listeningThread.isFinishedCollecting()&&votingThread.isFinishedVoting()){
+                    canProceed=true;
+                }
+            }catch(InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+        //Creating a requirement of all NEW vote information.
+        String newReq = "VOTE";
+        for(VoteToken voteToken: listeningThread.getCollectedVotes()){
+            for (Vote vote : voteToken.voteArray){
+                for (Vote existing : myvoteToken.voteArray){
+                    if (!vote.equals(existing)){
+//                        newVote = new VoteToken(newVote.getRequirement() + vote.)
+                        newReq = newReq + vote.getParticipantPort() + vote.getVote();
+                    }
+                }
+            }
+        }
+        //turn the newly constructed req into a voteToken to be returned!
+        return new VoteToken(newReq);
+    }
+
+
     public static void main(String[] args){
         if(args.length!=2){
             System.out.println("To run a participant, the usage is currently: java Participant <participant port> <coordinator port>");
@@ -110,6 +148,10 @@ public class Participant {
             for (String opt : voteOptions.getOptions()){
                 System.out.println(opt);
             }
+
+
+            //todo: work out an initial token, probably just choose a random from the options and use tokenHandler.makeVote()
+//            VoteToken round1vote = tokenHandler.makeVote(...)
 
 
             //Now that the detail token has been recieved, I can go ahead and create threads for voting and listening yeah?
