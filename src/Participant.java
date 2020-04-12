@@ -59,8 +59,8 @@ public class Participant {
      * following method runs a round. Should be able to handle any round, and comparing the previous
      * vVoteToken to the one returned should tell us whether we need to continue with rounds. .
      */
-    public VoteToken round(ServerSocket socket, int participants, VoteToken myvoteToken, DetailToken details){
-        ListeningThread listeningThread = new ListeningThread(socket, participants);
+    public VoteToken roundDepricated(ServerSocket thisPortSocket, VoteToken myvoteToken, DetailToken details, Map<String, String> storedP2V){
+        ListeningThread listeningThread = new ListeningThread(thisPortSocket, details.getOptions().length);
         VotingThread votingThread = new VotingThread(myvoteToken, details);
         listeningThread.start();
         votingThread.start();
@@ -75,21 +75,105 @@ public class Participant {
                 e.printStackTrace();
             }
         }
+
+        for(Vote vote: myvoteToken.voteArray){
+            storedP2V.put(Integer.toString(vote.getParticipantPort()), vote.getVote());
+        }
         //Creating a requirement of all NEW vote information.
         String newReq = "VOTE";
         for(VoteToken voteToken: listeningThread.getCollectedVotes()){
             for (Vote vote : voteToken.voteArray){
-                for (Vote existing : myvoteToken.voteArray){
-                    if (!vote.equals(existing)){
-//                        newVote = new VoteToken(newVote.getRequirement() + vote.)
-                        newReq = newReq + vote.getParticipantPort() + vote.getVote();
-                    }
+                if(storedP2V.get(Integer.toString(vote.getParticipantPort()))==null){
+                    newReq = newReq + vote.getParticipantPort() + vote.getVote();
+                }else if(storedP2V.get(Integer.toString(vote.getParticipantPort()))!=vote.getVote() ){
+                    newReq = newReq + vote.getParticipantPort() + vote.getVote();
+                }else{
+                    System.out.println("Already had it.");
                 }
+//                for (Vote existing : myvoteToken.voteArray){
+//                    if (!vote.equals(existing)){
+////                        newVote = new VoteToken(newVote.getRequirement() + vote.)
+//                        newReq = newReq + vote.getParticipantPort() + vote.getVote();
+//                    }
+//                }
             }
         }
         //turn the newly constructed req into a voteToken to be returned!
         return new VoteToken(newReq);
     }
+
+    public VoteToken voteTokenFromMap(Map<String, String> tokenInfo){
+        String newVote = "VOTE";
+        for(String port : tokenInfo.keySet()){
+            newVote+=" "+port+" "+tokenInfo.get(port);
+        }
+        TokenHandler tokenHandler = new TokenHandler();
+        return (VoteToken) tokenHandler.getToken(newVote);
+    }
+
+    /**
+     * @param thisPortSocket
+     * @param details
+     * @param sendInfo This is the previous round's returned newInfo, or on the initial run, its a map
+     *                 containing the initial vote
+     * @param storedP2V This is all the information stored so far, to check for new.
+     * @return          This will return any new info, based on the total info supplied
+     */
+    public Map<String, String> round(ServerSocket thisPortSocket, DetailToken details, Map<String, String> sendInfo, Map<String,String> storedP2V){
+        ListeningThread listeningThread = new ListeningThread(thisPortSocket, details.getOptions().length);
+        VoteToken myvoteToken = voteTokenFromMap(sendInfo);
+        VotingThread votingThread = new VotingThread(myvoteToken, details);
+        listeningThread.start();
+        votingThread.start();
+        boolean canProceed = false;
+        while(!canProceed){
+            try {
+                Thread.sleep(200);
+                if(listeningThread.isFinishedCollecting()&&votingThread.isFinishedVoting()){
+                    canProceed=true;
+                }
+            }catch(InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+
+        Map<String, String> newInfo = new HashMap<>();
+        for(VoteToken voteToken : listeningThread.getCollectedVotes()){
+            for(Vote vote: voteToken.voteArray){
+                if(storedP2V.get(Integer.toString(vote.getParticipantPort()))==null){
+                    newInfo.put(Integer.toString(vote.getParticipantPort()), vote.getVote());
+                }
+            }
+        }
+        return newInfo;
+    }
+
+    /**
+     *
+     * @param sendInfo Initial vote
+     * @param thisPortSocket
+     * @param details
+     * @return  All the info gathered over the process of running rounds however many times,
+     * to be turned into an outcome and sent back to the coordinator.
+     */
+    public Map<String, String> roundRunner(Map<String, String> sendInfo, ServerSocket thisPortSocket, DetailToken details){
+        Map<String, String> storedP2V = sendInfo;
+        int j = 100;//Upper bound for number of bounds, hardcoded for now.
+        int i = 0;
+//        Map<String, String> newInfo = new HashMap<>();
+        while (storedP2V.keySet().size()<details.getOptions().length){
+
+            sendInfo = round(thisPortSocket, details, sendInfo, storedP2V);
+            storedP2V.putAll(sendInfo);
+
+            i++;
+            if (i>j){
+                return storedP2V;
+            }
+        }
+        return storedP2V;
+    }
+
 
 
     public static void main(String[] args){
@@ -100,7 +184,7 @@ public class Participant {
         //using method for testing.
     }
 
-    public void runWithThese(String thisPort, String coordPort){
+    public void runWithThese(String thisPort, String coordPort, String voteStringPassedInForTest){
         try{
             DetailToken details = null;
             VoteOptionsToken voteOptions =null;
@@ -153,23 +237,33 @@ public class Participant {
                 System.out.println(opt);
             }
 
-
-            //todo: work out an initial token, probably just choose a random from the options and use tokenHandler.makeVote()
-//            VoteToken round1vote = tokenHandler.makeVote(...)
+            Map<String, String> storedPortsToVotes = new HashMap<>();
 
 
-            //Now that the detail token has been recieved, I can go ahead and create threads for voting and listening yeah?
+            ServerSocket thisPortSocket = new ServerSocket(Integer.parseInt(thisPort));
+            Map<String, String> initialVote = new HashMap<>();
+            initialVote.put(thisPort, voteStringPassedInForTest);
 
-            //todo: set up rounds, to use the threads to get and send votes
-            //todo: open 2 threads, one for looping through other ports and voting, the other for recieving others votes.
-
+//            VoteToken round2 = round(thisPortSocket,round1vote, details, storedPortsToVotes);
             /**
-             * Now to open a VotingThread and a ListeningThread to get the first round done,
-             * Kill the threads once each round is complete, then once its over I will implement
-             * outcome tokens. The problem with continuing at the moment is I dont know how
-             * participants choose who to vote for.
+             * Rounds plan
+             * Take in stored info, everyone new info needs to be sent to, and ports..
+             *
+             * Send old info map.
+             * get new info map
+             *
+             * Outside the rounds, roundRunner will send in new info every time, while storing a total list.
+             * initial run: sends map with only vote, recieves newInfo
+             * inbetween runs: adds newInfo to storedInfo
+             * next run: sends newInfo, recieves (updated) newInfo. Repeat.
+             *
+             * This is how it works, leaving the comment here in case I ever need to go over it again.
              */
 
+            Map<String, String> outcomeMap = roundRunner(initialVote, thisPortSocket, details);
+            System.out.println(outcomeMap.keySet()+ "\n"+ outcomeMap.values());
+
+            //Now that the detail token has been recieved, I can go ahead and create threads for voting and listening yeah?
 
 
             //todo: send coordinator back an outcome token!
