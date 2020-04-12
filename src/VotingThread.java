@@ -26,10 +26,16 @@ public class VotingThread extends Thread {
 
     public void run(){
         Socket socket;
+        try{
+            this.sleep(1000);
+            }catch(InterruptedException e){
+            e.printStackTrace();
+        }
         try {
             for (String port : details.getOptions()) {
                 while(true) {
                     try {
+//                        System.out.println(port);
                         socket = new Socket(InetAddress.getLocalHost(), Integer.parseInt(port));
                         PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
                         out.println(voteToken.requirement);
@@ -37,7 +43,12 @@ public class VotingThread extends Thread {
 //                        System.out.println("sent vote!");
                         break;
                     }catch(ConnectException e){
-//                        System.out.println("Failed connection");
+                        try{
+                            this.sleep(50);
+                        }catch(InterruptedException f){
+                            f.printStackTrace();
+                        }
+                        System.out.println("Failed connection");
                         continue;
                     }
                 }

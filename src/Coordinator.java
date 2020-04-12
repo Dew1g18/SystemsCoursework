@@ -72,7 +72,7 @@ public class Coordinator {
                 String in = portIn.readLine();
 //                System.out.println(in);
                 Token token = tokenHandler.getToken(in);
-//                System.out.println(token.requirement);
+                System.out.println(token.requirement);
                 String thisPort = "eh";
                 //todo: complete this method, its here to register a new socket and then run as a server thread
                 //In its current state it will connect to a single participant and send some dummy data (for testing)
@@ -93,6 +93,7 @@ public class Coordinator {
 //                System.out.println("Sent dummy data");
                 while(true){
                     if(numberOfConnections>=minPorts){
+//                        System.out.println("Saturated");
                         break;
                     }else{
                         try {

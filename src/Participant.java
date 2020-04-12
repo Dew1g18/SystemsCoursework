@@ -215,7 +215,7 @@ public class Participant {
              */
             while(moreToRead){
                 incoming = msgFromCoord.readLine();
-                System.out.println(incoming);
+//                System.out.println(incoming);
                 Token token = tokenHandler.getToken(incoming);
                 if(token instanceof DetailToken){
                     details = (DetailToken) token;
@@ -259,6 +259,8 @@ public class Participant {
              *
              * This is how it works, leaving the comment here in case I ever need to go over it again.
              */
+
+//            System.out.println(thisPort+"  "+ details.requirement);
 
             Map<String, String> outcomeMap = roundRunner(initialVote, thisPortSocket, details);
             System.out.println(outcomeMap.keySet()+ "\n"+ outcomeMap.values());
