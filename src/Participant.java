@@ -228,16 +228,16 @@ public class Participant {
                     moreToRead=false;
                 }}
             }
-            System.out.println("Details: ");
-            for (String det : details.getOptions()){
-                System.out.println(det);
-            }
-            System.out.println("\n\nVote Options: ");
-            for (String opt : voteOptions.getOptions()){
-                System.out.println(opt);
-            }
+//            System.out.println("Details: ");
+//            for (String det : details.getOptions()){
+//                System.out.println(det);
+//            }
+//            System.out.println("\n\nVote Options: ");
+//            for (String opt : voteOptions.getOptions()){
+//                System.out.println(opt);
+//            }
 
-            Map<String, String> storedPortsToVotes = new HashMap<>();
+//            Map<String, String> storedPortsToVotes = new HashMap<>();
 
 
             ServerSocket thisPortSocket = new ServerSocket(Integer.parseInt(thisPort));

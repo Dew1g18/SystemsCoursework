@@ -46,8 +46,21 @@ public class ListeningThread extends Thread {
             while(!finishedCollecting){
                 voter = listeningPort.accept();
                 voterInput = new BufferedReader(new InputStreamReader(voter.getInputStream()));
-
-                Token token = tokenHandler.getToken(voterInput.readLine());
+                String req;
+                while(true){
+                    req= voterInput.readLine();
+                    if(req!="null"){
+                        System.out.println(req);
+                        break;
+                    }
+                    try {
+                        this.sleep(200);
+                    }catch(InterruptedException e){
+                        e.printStackTrace();
+                    }
+                }
+                Token token = tokenHandler.getToken(req);
+//                System.out.println(req);
                 if (token instanceof VoteToken){
                     VoteToken voteToken = (VoteToken) token;
                     if (portToVote.get(voteToken.ports)!=null ){

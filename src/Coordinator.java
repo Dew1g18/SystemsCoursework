@@ -72,13 +72,15 @@ public class Coordinator {
                 String in = portIn.readLine();
 //                System.out.println(in);
                 Token token = tokenHandler.getToken(in);
-                System.out.println(token.requirement);
+//                System.out.println(token.requirement);
+                String thisPort = "eh";
                 //todo: complete this method, its here to register a new socket and then run as a server thread
                 //In its current state it will connect to a single participant and send some dummy data (for testing)
                 if (!(token instanceof JoinToken)) {
                     portSocket.close();
                     return;
                 }
+                thisPort = ((JoinToken) token).port;
                 // Check the client's registration request.
                 if (!(register(portName = ((JoinToken) token).port, portOut))) {
                     portSocket.close();
@@ -101,9 +103,14 @@ public class Coordinator {
                     }
                 }
                 String details = "DETAILS";
+//                System.out.println(thisPort);
+//                System.out.println(portSocket.toString());
                 //todo: fix this hardcoded ports and votes strings to actual ones
-                for(int i=0; i<minPorts; i++){
-                    details+=" "+Integer.toString(1070+i);
+                for(int i=0; i<minPorts; i++){ ;
+                    String port = Integer.toString(1070 + i);
+                    if(!thisPort.equals(port)) {
+                        details += " " + port;
+                    }
                 }
                 //This uses an integer vote from 0 to 5
                 String voteOptions = "VOTE_OPTIONS";
