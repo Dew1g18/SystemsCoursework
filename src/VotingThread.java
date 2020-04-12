@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -27,10 +28,19 @@ public class VotingThread extends Thread {
         Socket socket;
         try {
             for (String port : details.getOptions()) {
-                socket = new Socket(InetAddress.getLocalHost(), Integer.parseInt(port));
-                PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-                out.println(voteToken.requirement);
-                out.flush();
+                while(true) {
+                    try {
+                        socket = new Socket(InetAddress.getLocalHost(), Integer.parseInt(port));
+                        PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+                        out.println(voteToken.requirement);
+                        out.flush();
+//                        System.out.println("sent vote!");
+                        break;
+                    }catch(ConnectException e){
+//                        System.out.println("Failed connection");
+                        continue;
+                    }
+                }
             }
             finishedVoting=true;
         }catch (IOException e){
