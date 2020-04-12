@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.Random;
 
 /**
  * This is just here as a class with a main to quickly manually test to see if some of my things work, for instance here I
@@ -45,25 +46,66 @@ public class Test {
          * This will but updated to run a bunch of participants in separate threads to check that the whole sys works,
          * may migrate elsewhere.
          */
-        System.out.println("Socket info test");
-        Coordinator coordinator = new Coordinator();
-        Participant participant = new Participant();
-        Thread t1 = new Thread(new Runnable() {
+//        System.out.println("Socket info test");
+//        Coordinator coordinator = new Coordinator(1);
+//        Participant participant = new Participant();
+//        Thread t1 = new Thread(new Runnable() {
+//            @Override
+//            public void run(){
+//                try {
+//                    System.out.println("listening starting");
+//                    coordinator.startListening(4200);
+//                }catch(Exception e){
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//        t1.start();
+//
+//        System.out.println("Participants running");
+//        participant.runWithThese("6969", "4200", "unnecesary for this test..");
+
+        /**
+         * The following will test the participants rounds. each participant will be printing outcomes, so its gonna get loud
+         * Need to set up a lot of information and give the coordinator a little more functionality before this test will work
+         * will probably take a while...
+         * sigh
+         *
+         */
+
+        int numberOfParticipants = 10;
+        Thread coordinatorThread = new Thread(new Runnable() {
             @Override
-            public void run(){
+            public void run() {
                 try {
-                    System.out.println("listening starting");
-                    coordinator.startListening(4200);
-                }catch(Exception e){
+                    Coordinator coord = new Coordinator(numberOfParticipants);
+                    coord.startListening(6969);
+                }catch(IOException e){
                     e.printStackTrace();
                 }
             }
         });
-        t1.start();
+        coordinatorThread.start();
 
-        System.out.println("Participants running");
-        participant.runWithThese("6969", "4200");
+        ThreadGroup participants = new ThreadGroup("Participants");
+        Random randomInts = new Random();
+        for(int i=0; i<numberOfParticipants; i++){
+            int finalI = i;
+            Thread pThred = new Thread(participants, new Runnable() {
+                @Override
+                public void run() {
+                    Participant participant = new Participant();
+                    String pport = Integer.toString(1070+ finalI);
+                    String vote = Integer.toString(randomInts.nextInt(5));
+                    participant.runWithThese(pport, "6969", vote);
+                }
+            });
+            pThred.start();
+        }
+
+
 
     }
+
 }
 
