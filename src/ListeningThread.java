@@ -26,6 +26,43 @@ public class ListeningThread extends Thread {
         return finishedCollecting;
     }
 
+    class Listener extends  Thread{
+        Socket voter;
+        public Listener(Socket voter){
+            this.voter = voter;
+        }
+
+        @Override
+        public void run() {
+
+            try{
+                TokenHandler tokenHandler = new TokenHandler();
+                BufferedReader voterInput = new BufferedReader(new InputStreamReader(voter.getInputStream()));
+                String req;
+
+                while (true) {
+                    req = voterInput.readLine();
+                    if (!req.equals("null")) {
+                        System.out.println(req);
+                        break;
+                    }
+
+                }
+                Token token = tokenHandler.getToken(req);
+                //                System.out.println(req);
+                if (token instanceof VoteToken) {
+                    VoteToken voteToken = (VoteToken) token;
+                    if (portToVote.get(voteToken.ports) != null) {
+                        collectedVotes.add(voteToken);
+                        portToVote.put(voteToken.ports, voteToken.votes);
+                    }
+                }
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
     public Map<String[], String[]> getPortToVote() {
         return portToVote;
     }
@@ -43,34 +80,37 @@ public class ListeningThread extends Thread {
              * it places them in 2 forms and has a boolean for the object that uses this to know when
              * the set of votes is complete.
              */
-            while(!finishedCollecting){
+            while(!finishedCollecting) {
                 voter = listeningPort.accept();
-                voterInput = new BufferedReader(new InputStreamReader(voter.getInputStream()));
-                String req;
-                while(true){
-                    req= voterInput.readLine();
-                    if(req!="null"){
-                        System.out.println(req);
-                        break;
+                try {
+                    Listener listener = new Listener(voter);
+                    listener.start();
+////                System.out.println(voter.toString());
+//                voterInput = new BufferedReader(new InputStreamReader(voter.getInputStream()));
+//                String req;
+//                while(true){
+//                    req= voterInput.readLine();
+//                    if(!req.equals("null")){
+//                        System.out.println(req);
+//                        break;
+//                    }
+//
+//                }
+//                Token token = tokenHandler.getToken(req);
+////                System.out.println(req);
+//                if (token instanceof VoteToken){
+//                    VoteToken voteToken = (VoteToken) token;
+//                    if (portToVote.get(voteToken.ports)!=null ){
+//                        collectedVotes.add(voteToken);
+//                        portToVote.put(voteToken.ports, voteToken.votes);
+//                    } }
+                    if (waitNo == collectedVotes.size()) {
+                        finishedCollecting = true;
                     }
-                    try {
-                        this.sleep(200);
-                    }catch(InterruptedException e){
-                        e.printStackTrace();
-                    }
+                }catch (NullPointerException e){
+                    e.printStackTrace();
                 }
-                Token token = tokenHandler.getToken(req);
-//                System.out.println(req);
-                if (token instanceof VoteToken){
-                    VoteToken voteToken = (VoteToken) token;
-                    if (portToVote.get(voteToken.ports)!=null ){
-                        collectedVotes.add(voteToken);
-                        portToVote.put(voteToken.ports, voteToken.votes);
-                    } }
-                if(waitNo==collectedVotes.size()){
-                    finishedCollecting = true;
-
-                } }
+            }
         }catch(IOException e){
             e.printStackTrace();
         }
