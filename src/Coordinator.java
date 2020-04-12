@@ -26,6 +26,14 @@ public class Coordinator {
     //todo: Above in the final set of parenthesis should be the maxPorts variable if one is to be implemented.
 
 
+    public static void main(String[] args){
+        // args will contain the port, min connections and probably a bunch of other stuff.
+    }
+
+    public Coordinator(int minPorts) {
+        this.minPorts = minPorts;
+    }
+
     public void startListening(int port) throws IOException {
         ServerSocket listener = new ServerSocket(port);
 //        System.out.println("server socket open");
@@ -76,11 +84,36 @@ public class Coordinator {
                     portSocket.close();
                     return;
                 }
-                //Send dummy data
-                portOut.println("DETAILS 0984 1204 2348 9842");
-                portOut.println("VOTE_OPTIONS 2139 2348");
-                portOut.flush();
+//                //Send dummy data
+//                portOut.println("DETAILS 0984 1204 2348 9842");
+//                portOut.println("VOTE_OPTIONS 2139 2348");
+//                portOut.flush();
 //                System.out.println("Sent dummy data");
+                while(true){
+                    if(numberOfConnections>=minPorts){
+                        break;
+                    }else{
+                        try {
+                            this.sleep(1000);
+                        }catch(InterruptedException e){
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                String details = "DETAILS";
+                //todo: fix this hardcoded ports and votes strings to actual ones
+                for(int i=0; i<minPorts; i++){
+                    details+=" "+Integer.toString(1070+i);
+                }
+                //This uses an integer vote from 0 to 5
+                String voteOptions = "VOTE_OPTIONS";
+                for(int i=0;i<6;i++){
+                    voteOptions+=" "+Integer.toString(i);
+                }
+
+                portOut.println(details);
+                portOut.println(voteOptions);
+                portOut.flush();
 
             }catch(IOException e){
                 e.printStackTrace();
