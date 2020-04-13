@@ -8,100 +8,6 @@ import java.util.Map;
 
 public class Participant {
 
-    /**
-     * Writing this here so I don't forget as I'm likely off to bed soon and my grasp on this is tenuous currently
-     *
-     * The way I understand these sockets currently is that the coordinator will have a port which it listens on,
-     * the same as all the participants do, and each process in this simulation will have a ServerSocket
-     *
-     * Participants will have only one connection, this should be to the coordinator, who gives the required information
-     * to vote and have the algorithm carried out, the coorinator serverSocket will maintain connections to each
-     * participant, if I am to follow the chat server example closely this will have each one on a separate thread.
-     *
-     * participant, once it has the details of all other processes, will then use the list to vote, it will do this by
-     * ###Loop through all details and vote to each of those, opening connections to them one at a time and voting###
-     * Concurrently there should probably be another thread listening to pick up each of the other participants' votes
-     * Not sure whether sending confirmation is actually neccesary, will have to go over the consensus slides again
-     * but last time they didnt feel like they made a lot of sense without the lecture to go with them.
-     *
-     */
-
-
-//    private int port;
-
-    //This method is for finding the most common vote in a round.
-//    private VoteToken winningVote(ArrayList<VoteToken> votes, String myPort){
-//        TokenHandler tokenHandler = new TokenHandler();
-//        Map<String, Integer> optionToHits = new HashMap<>();
-//        for (VoteToken vote : votes){
-//            if (optionToHits.get(vote.vote)!=null){
-//                optionToHits.put(vote.vote,optionToHits.get(vote.vote)+1);
-//            }else{
-//                optionToHits.put(vote.vote,1);
-//            }
-//        }
-//        VoteToken chosen = votes.get(0);
-//        chosen.port=myPort;
-//        for (String vote : optionToHits.keySet()){
-//            if (optionToHits.get(vote)>optionToHits.get(chosen)){
-//                chosen=tokenHandler.makeVote(myPort, vote);
-//            }
-//        }
-//        return chosen;
-//    }
-    VoteToken stored;
-
-    public Participant(){
-        stored = new VoteToken("VOTE");
-    }
-
-    /**
-     * following method runs a round. Should be able to handle any round, and comparing the previous
-     * vVoteToken to the one returned should tell us whether we need to continue with rounds. .
-     */
-    public VoteToken roundDepricated(ServerSocket thisPortSocket, VoteToken myvoteToken, DetailToken details, Map<String, String> storedP2V){
-        ListeningThread listeningThread = new ListeningThread(thisPortSocket, details.getOptions().length);
-        VotingThread votingThread = new VotingThread(myvoteToken, details);
-        listeningThread.start();
-        votingThread.start();
-        boolean canProceed = false;
-        while(!canProceed){
-            try {
-                Thread.sleep(200);
-                if(listeningThread.isFinishedCollecting()&&votingThread.isFinishedVoting()){
-                    canProceed=true;
-                }
-            }catch(InterruptedException e){
-                e.printStackTrace();
-            }
-        }
-
-        for(Vote vote: myvoteToken.voteArray){
-            storedP2V.put(Integer.toString(vote.getParticipantPort()), vote.getVote());
-        }
-        //Creating a requirement of all NEW vote information.
-        String newReq = "VOTE";
-        for(VoteToken voteToken: listeningThread.getCollectedVotes()){
-            for (Vote vote : voteToken.voteArray){
-                if(storedP2V.get(Integer.toString(vote.getParticipantPort()))==null){
-                    newReq = newReq + vote.getParticipantPort() + vote.getVote();
-                }else if(storedP2V.get(Integer.toString(vote.getParticipantPort()))!=vote.getVote() ){
-                    newReq = newReq + vote.getParticipantPort() + vote.getVote();
-                }else{
-                    System.out.println("Already had it.");
-                }
-//                for (Vote existing : myvoteToken.voteArray){
-//                    if (!vote.equals(existing)){
-////                        newVote = new VoteToken(newVote.getRequirement() + vote.)
-//                        newReq = newReq + vote.getParticipantPort() + vote.getVote();
-//                    }
-//                }
-            }
-        }
-        //turn the newly constructed req into a voteToken to be returned!
-        return new VoteToken(newReq);
-    }
-
     public VoteToken voteTokenFromMap(Map<String, String> tokenInfo){
         String newVote = "VOTE";
         for(String port : tokenInfo.keySet()){
@@ -200,6 +106,12 @@ public class Participant {
         //using method for testing.
     }
 
+    /**
+     * substitute main for use in testing.
+     * @param thisPort
+     * @param coordPort
+     * @param voteStringPassedInForTest
+     */
     public void runWithThese(String thisPort, String coordPort, String voteStringPassedInForTest){
         try{
             DetailToken details = null;
