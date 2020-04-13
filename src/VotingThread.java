@@ -20,6 +20,7 @@ public class VotingThread extends Thread {
     public VotingThread(VoteToken voteToken, DetailToken detailToken){
 //        this.mySocket = socket;
         this.voteToken = voteToken;
+//        System.out.println(voteToken.requirement);
         this.details = detailToken;
         finishedVoting = false;
     }
@@ -40,7 +41,7 @@ public class VotingThread extends Thread {
                         PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
                         out.println(voteToken.requirement);
                         out.flush();
-//                        System.out.println("sent vote!");
+//                        System.out.println(voteToken.ports + "VoteToken");
                         break;
                     }catch(ConnectException e){
                         try{

@@ -11,6 +11,8 @@ import java.util.Random;
  *  the day time I will update this to include a test harness.
  *
  * ###This should not be submitted###
+ *
+ * Old tests will likely not work as I have refactored since.
  */
 
 public class Test {
