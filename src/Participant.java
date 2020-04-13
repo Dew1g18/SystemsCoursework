@@ -2,9 +2,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Participant {
 
@@ -96,6 +94,32 @@ public class Participant {
         return storedP2V;
     }
 
+    private OutcomeToken makeOutcome(Map<String, String> outMap){
+        String outcomeReq = "OUTCOME";
+        Map<String, Integer> voteFreq = new HashMap<>();
+        for(String vote: outMap.values()){
+            if(voteFreq.get(vote)!=null){
+                voteFreq.put(vote, voteFreq.get(vote)+1);
+            }else{
+                voteFreq.put(vote, 1);
+            }
+        }
+        String maxVote = "";
+        int maxFreq = 0;
+        for(String vote:voteFreq.keySet()){
+            if(voteFreq.get(vote)>maxFreq){
+                maxFreq=voteFreq.get(vote);
+                maxVote=vote;
+            }
+        }
+
+        outcomeReq += " "+maxVote;
+        for (String port: outMap.keySet()){
+            outcomeReq+=" "+port;
+        }
+        return new OutcomeToken(outcomeReq);
+    }
+
 
 
     public static void main(String[] args){
@@ -156,17 +180,6 @@ public class Participant {
                     moreToRead=false;
                 }}
             }
-//            System.out.println("Details: ");
-//            for (String det : details.getOptions()){
-//                System.out.println(det);
-//            }
-//            System.out.println("\n\nVote Options: ");
-//            for (String opt : voteOptions.getOptions()){
-//                System.out.println(opt);
-//            }
-
-//            Map<String, String> storedPortsToVotes = new HashMap<>();
-
 
             ServerSocket thisPortSocket = new ServerSocket(Integer.parseInt(thisPort));
             Map<String, String> initialVote = new HashMap<>();
@@ -205,12 +218,6 @@ public class Participant {
         }
     }
 
-
-
-
-//    boolean joinCoordinator(){
-//
-//    }
 
 
 
