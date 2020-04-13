@@ -107,8 +107,16 @@ public class Participant {
         for(String port : tokenInfo.keySet()){
             newVote+=" "+port+" "+tokenInfo.get(port);
         }
+//        System.out.println(newVote);
         TokenHandler tokenHandler = new TokenHandler();
-        return (VoteToken) tokenHandler.getToken(newVote);
+        Token token = tokenHandler.getToken(newVote);
+//        System.out.println("just the token" + token.requirement);
+        VoteToken voteToken = null;
+        if(token instanceof VoteToken){
+            voteToken = (VoteToken) token;
+        }
+//        System.out.println(voteToken.requirement);
+        return voteToken;
     }
 
     /**
@@ -119,18 +127,26 @@ public class Participant {
      * @param storedP2V This is all the information stored so far, to check for new.
      * @return          This will return any new info, based on the total info supplied
      */
-    public Map<String, String> round(ServerSocket thisPortSocket, DetailToken details, Map<String, String> sendInfo, Map<String,String> storedP2V){
+    public Map<String, String> round(
+            ServerSocket thisPortSocket,
+            DetailToken details,
+            Map<String, String> sendInfo,
+            Map<String,String> storedP2V
+    ){
         ListeningThread listeningThread = new ListeningThread(thisPortSocket, details.getOptions().length);
         VoteToken myvoteToken = voteTokenFromMap(sendInfo);
         VotingThread votingThread = new VotingThread(myvoteToken, details);
         listeningThread.start();
         votingThread.start();
         boolean canProceed = false;
+        int count = 0; //todo: This is here to stop the round after a certain about of time, not sure if this is required
         while(!canProceed){
             try {
-                Thread.sleep(200);
-                if(listeningThread.isFinishedCollecting()&&votingThread.isFinishedVoting()){
+                Thread.sleep(20);
+                count++;
+                if(listeningThread.isFinishedCollecting()&&votingThread.isFinishedVoting()||count>4){
                     canProceed=true;
+                    listeningThread.setFinishedCollecting(true);
                 }
             }catch(InterruptedException e){
                 e.printStackTrace();
@@ -243,6 +259,7 @@ public class Participant {
             ServerSocket thisPortSocket = new ServerSocket(Integer.parseInt(thisPort));
             Map<String, String> initialVote = new HashMap<>();
             initialVote.put(thisPort, voteStringPassedInForTest);
+//            System.out.println(thisPort+" "+voteStringPassedInForTest);
 
 //            VoteToken round2 = round(thisPortSocket,round1vote, details, storedPortsToVotes);
             /**

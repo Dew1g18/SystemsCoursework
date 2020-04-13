@@ -23,6 +23,10 @@ public class ListeningThread extends Thread {
         this.waitNo = waitNo;
     }
 
+    public void setFinishedCollecting(boolean finishedCollecting) {
+        this.finishedCollecting = finishedCollecting;
+    }
+
     public boolean isFinishedCollecting() {
         return finishedCollecting;
     }
