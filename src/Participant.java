@@ -206,6 +206,9 @@ public class Participant {
 
             Map<String, String> outcomeMap = roundRunner(initialVote, thisPortSocket, details);
             System.out.println(outcomeMap.keySet()+ "\n"+ outcomeMap.values());
+            OutcomeToken outcome = makeOutcome(outcomeMap);
+            msgToCoord.println(outcome.requirement);
+            msgToCoord.flush();
 
             //Now that the detail token has been recieved, I can go ahead and create threads for voting and listening yeah?
 
