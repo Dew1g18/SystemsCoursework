@@ -18,49 +18,13 @@ public class ListeningThread extends Thread {
 
     public ListeningThread(ServerSocket socket, int waitNo){
         this.portToVote = new HashMap<>();
+        this.collectedVotes = new ArrayList<>();
         this.listeningPort = socket;
         this.waitNo = waitNo;
     }
 
     public boolean isFinishedCollecting() {
         return finishedCollecting;
-    }
-
-    class Listener extends  Thread{
-        Socket voter;
-        public Listener(Socket voter){
-            this.voter = voter;
-        }
-
-        @Override
-        public void run() {
-
-            try{
-                TokenHandler tokenHandler = new TokenHandler();
-                BufferedReader voterInput = new BufferedReader(new InputStreamReader(voter.getInputStream()));
-                String req;
-
-                while (true) {
-                    req = voterInput.readLine();
-                    if (!req.equals("null")) {
-                        System.out.println(req);
-                        break;
-                    }
-
-                }
-                Token token = tokenHandler.getToken(req);
-                //                System.out.println(req);
-                if (token instanceof VoteToken) {
-                    VoteToken voteToken = (VoteToken) token;
-                    if (portToVote.get(voteToken.ports) != null) {
-                        collectedVotes.add(voteToken);
-                        portToVote.put(voteToken.ports, voteToken.votes);
-                    }
-                }
-            }catch(IOException e){
-                e.printStackTrace();
-            }
-        }
     }
 
     public Map<String[], String[]> getPortToVote() {
@@ -83,27 +47,21 @@ public class ListeningThread extends Thread {
             while(!finishedCollecting) {
                 voter = listeningPort.accept();
                 try {
-                    Listener listener = new Listener(voter);
-                    listener.start();
-////                System.out.println(voter.toString());
-//                voterInput = new BufferedReader(new InputStreamReader(voter.getInputStream()));
-//                String req;
-//                while(true){
-//                    req= voterInput.readLine();
-//                    if(!req.equals("null")){
-//                        System.out.println(req);
-//                        break;
-//                    }
-//
+                voterInput = new BufferedReader(new InputStreamReader(voter.getInputStream()));
+                String req= voterInput.readLine();
+//                if(!req.equals("null")){
+//                    System.out.println(req);
 //                }
-//                Token token = tokenHandler.getToken(req);
-////                System.out.println(req);
-//                if (token instanceof VoteToken){
-//                    VoteToken voteToken = (VoteToken) token;
-//                    if (portToVote.get(voteToken.ports)!=null ){
-//                        collectedVotes.add(voteToken);
-//                        portToVote.put(voteToken.ports, voteToken.votes);
-//                    } }
+                Token token = tokenHandler.getToken(req);
+//                System.out.println(req);
+                if (token instanceof VoteToken){
+//                    System.out.println("Enter");
+                    VoteToken voteToken = (VoteToken) token;
+//                    System.out.println(voteToken.requirement);
+                    collectedVotes.add(voteToken);
+                    System.out.println(voteToken.requirement+" added");
+                    portToVote.put(voteToken.ports, voteToken.votes);
+                    }
                     if (waitNo == collectedVotes.size()) {
                         finishedCollecting = true;
                     }
@@ -111,7 +69,7 @@ public class ListeningThread extends Thread {
                     e.printStackTrace();
                 }
             }
-        }catch(IOException e){
+        }catch(Exception e){
             e.printStackTrace();
         }
     }
