@@ -52,6 +52,9 @@ public class TokenHandler {
 //                System.out.println(requirement+" makes "+ voteToken.requirement);
                 return voteToken;
 
+            case "OUTCOME":
+                return new OutcomeToken(requirement);
+
         }
         return null;
     }
@@ -149,5 +152,21 @@ class VoteToken extends Token{
             portsToVotes.put(ports[i], votes[i]);
         }
         return portsToVotes;
+    }
+}
+
+class OutcomeToken extends Token{
+    String vote;
+    String[] portsConsidered;
+
+    public OutcomeToken(String requirement){
+        this.requirement = requirement;
+        StringTokenizer tokenizer = new StringTokenizer(requirement);
+        tokenizer.nextToken();
+        this.vote = tokenizer.nextToken();
+        this.portsConsidered = new String[tokenizer.countTokens()];
+        for(int i=0; i<tokenizer.countTokens(); i++){
+            this.portsConsidered[i]=tokenizer.nextToken();
+        }
     }
 }
