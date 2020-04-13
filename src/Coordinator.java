@@ -123,6 +123,9 @@ public class Coordinator {
                 portOut.println(voteOptions);
                 portOut.flush();
 
+                System.out.println(portIn.readLine());
+                portSocket.close();
+
             }catch(IOException e){
                 e.printStackTrace();
 
