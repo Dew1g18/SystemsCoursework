@@ -10,6 +10,7 @@ public class VotingThread extends Thread {
 //    private Socket mySocket;
     private VoteToken voteToken;
     private boolean finishedVoting;
+    private ParticipantLogger pl;
 
     public boolean isFinishedVoting() {
         return finishedVoting;
@@ -17,12 +18,13 @@ public class VotingThread extends Thread {
 
     private DetailToken details;
 
-    public VotingThread(VoteToken voteToken, DetailToken detailToken){
+    public VotingThread(VoteToken voteToken, DetailToken detailToken, ParticipantLogger pl){
 //        this.mySocket = socket;
         this.voteToken = voteToken;
 //        System.out.println(voteToken.requirement);
         this.details = detailToken;
         finishedVoting = false;
+        this.pl = pl;
     }
 
     public void run(){
@@ -36,11 +38,12 @@ public class VotingThread extends Thread {
             for (String port : details.getOptions()) {
                 while(true) {
                     try {
-//                        System.out.println(port);
-                        socket = new Socket(InetAddress.getLocalHost(), Integer.parseInt(port));
+                        int portInt = Integer.parseInt(port);
+                        socket = new Socket(InetAddress.getLocalHost(), portInt);
                         PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
                         out.println(voteToken.requirement);
                         out.flush();
+                        pl.votesSent(portInt, voteToken.voteArrayList());
 //                        System.out.println(voteToken.ports + "VoteToken");
                         break;
                     }catch(ConnectException e){
