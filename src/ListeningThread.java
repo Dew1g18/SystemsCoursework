@@ -14,13 +14,15 @@ public class ListeningThread extends Thread {
     private ArrayList<VoteToken> collectedVotes;
     private boolean finishedCollecting;
     private Map<String[], String[]> portToVote;
+    private ParticipantLogger pl;
 
 
-    public ListeningThread(ServerSocket socket, int waitNo){
+    public ListeningThread(ServerSocket socket, int waitNo, ParticipantLogger pl){
         this.portToVote = new HashMap<>();
         this.collectedVotes = new ArrayList<>();
         this.listeningPort = socket;
         this.waitNo = waitNo;
+        this.pl = pl;
     }
 
     public void setFinishedCollecting(boolean finishedCollecting) {
@@ -53,15 +55,13 @@ public class ListeningThread extends Thread {
                 try {
                 voterInput = new BufferedReader(new InputStreamReader(voter.getInputStream()));
                 String req= voterInput.readLine();
-//                if(!req.equals("null")){
-//                    System.out.println(req);
-//                }
                 Token token = tokenHandler.getToken(req);
 //                System.out.println(req);
                 if (token instanceof VoteToken){
-//                    System.out.println("Enter");
                     VoteToken voteToken = (VoteToken) token;
-//                    System.out.println(voteToken.requirement);
+                    System.out.println("/////////"+voter.getPort());
+                    //todo: continue from implementation of votesRecieved
+
                     collectedVotes.add(voteToken);
                     System.out.println(voteToken.requirement+" added");
                     portToVote.put(voteToken.ports, voteToken.votes);
