@@ -1,3 +1,5 @@
+import com.sun.xml.internal.ws.wsdl.writer.document.Part;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -5,6 +7,21 @@ import java.net.Socket;
 import java.util.*;
 
 public class Participant {
+
+
+
+    public static void main(String[] args){
+        if(args.length!=3){
+            System.out.println("To run a participant, the usage is currently:" +
+                    "\n java Participant <participant port> <coordinator port> <vote>");
+        }
+        //todo: not sure if the method should actually just be run in main yet, wont take long to put back here if needed,
+        //using method for testing.
+        else {
+            Participant participant = new Participant();
+            participant.runWithThese(args[0], args[1], args[2]);
+        }
+    }
 
     public VoteToken voteTokenFromMap(Map<String, String> tokenInfo){
         String newVote = "VOTE";
@@ -121,14 +138,6 @@ public class Participant {
     }
 
 
-
-    public static void main(String[] args){
-        if(args.length!=2){
-            System.out.println("To run a participant, the usage is currently: java Participant <participant port> <coordinator port>");
-        }
-        //todo: not sure if the method should actually just be run in main yet, wont take long to put back here if needed,
-        //using method for testing.
-    }
 
     /**
      * substitute main for use in testing.
