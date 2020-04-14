@@ -52,7 +52,7 @@ public class VotingThread extends Thread {
                         }catch(InterruptedException f){
                             f.printStackTrace();
                         }
-                        System.out.println("Failed connection");
+//                        System.out.println("Failed connection");
                         continue;
                     }
                 }

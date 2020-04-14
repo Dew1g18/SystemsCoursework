@@ -8,22 +8,26 @@ import java.util.*;
 
 public class Participant {
     private ParticipantLogger participantLogger;
+    private int timeout;
 
     public static void main(String[] args){
         if(args.length!=3){
             System.out.println("To run a participant, the usage is currently:" +
-                    "\n java Participant <participant port> <coordinator port> <vote>");
+                    "\n java Participant <participant port> <coordinator port> <timeout>");
         }
         else {
             try {
                 int serverPort = Integer.parseInt(args[1]);
                 int partPort = Integer.parseInt(args[0]);
-                int timeout = 40;
+                int timeout = Integer.parseInt(args[2]);
                 
                 ParticipantLogger.initLogger(serverPort, partPort, timeout);
                 ParticipantLogger pl = ParticipantLogger.getLogger();
                 Participant participant = new Participant(pl);
-                participant.runParticipant(args[0], args[1], args[2]);
+
+                Random randomInts = new Random();
+                String vote = Integer.toString(randomInts.nextInt(5));
+                participant.runParticipant(args[0], args[1], vote ,timeout);
                 
             }catch (IOException e){
                 e.printStackTrace();
@@ -34,6 +38,7 @@ public class Participant {
     public Participant(ParticipantLogger pl){
             this.participantLogger = pl;
     }
+
 
     /**
      * @param thisPortSocket
@@ -56,13 +61,20 @@ public class Participant {
         votingThread.start();
         boolean canProceed = false;
         int count = 0; //todo: This is here to stop the round after a certain about of time, not sure if this is required
+
         while(!canProceed){
             try {
-                Thread.sleep(20);
+                Thread.sleep(this.timeout/5);
                 count++;
-                if(listeningThread.isFinishedCollecting()&&votingThread.isFinishedVoting()||count>4){
+                if(listeningThread.isFinishedCollecting()&&votingThread.isFinishedVoting()){
                     canProceed=true;
                     listeningThread.setFinishedCollecting(true);
+                    Thread.sleep(10);
+                }
+                if (count>4){
+                    canProceed = true;
+                    listeningThread.setFinishedCollecting(true);
+                    Thread.sleep(10);
                 }
             }catch(InterruptedException e){
                 e.printStackTrace();
@@ -112,8 +124,9 @@ public class Participant {
      * @param coordPort
      * @param voteStringPassedInForTest
      */
-    public void runParticipant(String thisPort, String coordPort, String voteStringPassedInForTest){
+    public void runParticipant(String thisPort, String coordPort, String voteStringPassedInForTest, int timeout){
         try{
+            this.timeout = timeout;
             DetailToken details = null;
             VoteOptionsToken voteOptions =null;
 

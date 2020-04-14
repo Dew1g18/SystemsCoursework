@@ -59,11 +59,11 @@ public class ListeningThread extends Thread {
 //                System.out.println(req);
                 if (token instanceof VoteToken){
                     VoteToken voteToken = (VoteToken) token;
-                    System.out.println("/////////"+voter.getPort());
+//                    System.out.println("/////////"+voter.getPort());
                     //todo: continue from implementation of votesRecieved
 
                     collectedVotes.add(voteToken);
-                    System.out.println(voteToken.requirement+" added");
+//                    System.out.println(voteToken.requirement+" added");
                     portToVote.put(voteToken.ports, voteToken.votes);
                     }
                     if (waitNo == collectedVotes.size()) {
