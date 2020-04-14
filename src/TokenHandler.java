@@ -1,6 +1,4 @@
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class TokenHandler {
 
@@ -95,6 +93,14 @@ class DetailToken extends Token{
         this.requirement = req;
     }
 
+    public ArrayList<Integer> detailsArray(){
+        ArrayList<Integer> dets = new ArrayList<>();
+        for(String det: getOptions()){
+            dets.add(Integer.parseInt(det));
+        }
+        return dets;
+    }
+
     public String[] getOptions() {
         return options;
     }
@@ -106,6 +112,15 @@ class VoteOptionsToken extends Token{
         this.requirement= requirement;
         this.options=options;
     }
+
+    public ArrayList<String> voteOptionArray(){
+        ArrayList<String> votes = new ArrayList<>();
+        for(String vote: getOptions()){
+            votes.add(vote);
+        }
+        return votes;
+    }
+
     public String[] getOptions() {
         return options;
     }
@@ -143,6 +158,14 @@ class VoteToken extends Token{
             make[i]=new Vote(Integer.parseInt(ports[i]), votes[i]);
         }
         return make;
+    }
+
+    public ArrayList<Vote> voteArrayList(){
+        ArrayList<Vote> votes = new ArrayList<>();
+        for(Vote vote: makeVoteArray(this.voteArray.length)){
+            votes.add(vote);
+        }
+        return votes;
     }
 
 
