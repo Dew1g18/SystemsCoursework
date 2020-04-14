@@ -89,6 +89,12 @@ public class Test {
         });
         coordinatorThread.start();
 
+        try {
+            ParticipantLogger.initLogger(6969, 00, 10);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         ThreadGroup participants = new ThreadGroup("Participants");
         Random randomInts = new Random();
         for(int i=0; i<numberOfParticipants; i++){
@@ -96,10 +102,15 @@ public class Test {
             Thread pThred = new Thread(participants, new Runnable() {
                 @Override
                 public void run() {
-                    Participant participant = new Participant();
-                    String pport = Integer.toString(1070+ finalI);
-                    String vote = Integer.toString(randomInts.nextInt(5));
-                    participant.runWithThese(pport, "6969", vote);
+                    try {
+                        String pport = Integer.toString(1070 + finalI);
+                        String vote = Integer.toString(randomInts.nextInt(5));
+//                        ParticipantLogger.initLogger(6969, Integer.parseInt(pport), 10);
+                        Participant participant = new Participant(ParticipantLogger.getLogger());
+                        participant.runParticipant(pport, "6969", vote, 100);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
                 }
             });
             pThred.start();
