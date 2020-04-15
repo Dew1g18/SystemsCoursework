@@ -27,6 +27,10 @@ public class VotingThread extends Thread {
         this.pl = pl;
     }
 
+    public void setFinishedVoting(boolean finishedVoting) {
+        this.finishedVoting = finishedVoting;
+    }
+
     public void run(){
         Socket socket;
         try{
@@ -34,33 +38,39 @@ public class VotingThread extends Thread {
             }catch(InterruptedException e){
             e.printStackTrace();
         }
-        try {
+//        try {
             for (String port : details.getOptions()) {
                 while(true) {
+                    int portInt = Integer.parseInt(port);
                     try {
-                        int portInt = Integer.parseInt(port);
                         socket = new Socket(InetAddress.getLocalHost(), portInt);
                         PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+                        pl.connectionEstablished(portInt);
                         out.println(voteToken.requirement);
                         out.flush();
                         pl.votesSent(portInt, voteToken.voteArrayList());
+                        pl.messageSent(portInt, voteToken.requirement);
 //                        System.out.println(voteToken.ports + "VoteToken");
                         break;
-                    }catch(ConnectException e){
+                    }catch(Exception e){
                         try{
                             this.sleep(50);
                         }catch(InterruptedException f){
                             f.printStackTrace();
                         }
-//                        System.out.println("Failed connection");
+                        pl.participantCrashed(portInt);
+                        if(finishedVoting){
+                            break;
+                        }
+                        System.out.println("Failed connection");
                         continue;
                     }
                 }
             }
             finishedVoting=true;
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+//        }catch (IOException e){
+//            e.printStackTrace();
+//        }
 
     }
 

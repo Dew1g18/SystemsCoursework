@@ -90,7 +90,7 @@ public class Test {
         coordinatorThread.start();
 
         try {
-            ParticipantLogger.initLogger(6969, 00, 10);
+            ParticipantLogger.initLogger(6969, 00, 100);
         }catch (Exception e){
             e.printStackTrace();
         }

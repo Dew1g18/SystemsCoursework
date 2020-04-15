@@ -52,22 +52,32 @@ public class ListeningThread extends Thread {
              */
             while(!finishedCollecting) {
                 voter = listeningPort.accept();
-                try {
-                voterInput = new BufferedReader(new InputStreamReader(voter.getInputStream()));
-                String req= voterInput.readLine();
-                Token token = tokenHandler.getToken(req);
-//                System.out.println(req);
-                if (token instanceof VoteToken){
-                    VoteToken voteToken = (VoteToken) token;
-//                    System.out.println("/////////"+voter.getPort());
-                    //todo: continue from implementation of votesRecieved
+                int senderParticipant = Integer.parseInt(voter.getLocalSocketAddress().toString().split(":")[1]);
 
-                    collectedVotes.add(voteToken);
-//                    System.out.println(voteToken.requirement+" added");
-                    portToVote.put(voteToken.ports, voteToken.votes);
-                    }
-                    if (waitNo == collectedVotes.size()) {
-                        finishedCollecting = true;
+                pl.connectionAccepted(senderParticipant);
+
+//                System.out.println(senderParticipant);
+//                System.out.println(voter.getLocalSocketAddress().toString().replace("\127"));
+                try {
+                    voterInput = new BufferedReader(new InputStreamReader(voter.getInputStream()));
+
+                    String req= voterInput.readLine();
+                    Token token = tokenHandler.getToken(req);
+                    pl.messageReceived(senderParticipant, token.requirement);
+    //                System.out.println(req);
+                    if (token instanceof VoteToken){
+                        VoteToken voteToken = (VoteToken) token;
+    //                    System.out.println("/////////"+voter.getPort());
+                        pl.votesReceived(senderParticipant, voteToken.voteArrayList());
+
+
+                        collectedVotes.add(voteToken);
+    //                    System.out.println(voteToken.requirement+" added");
+                        portToVote.put(voteToken.ports, voteToken.votes);
+                        }
+                        if (waitNo == collectedVotes.size()) {
+                            finishedCollecting = true;
+//                            System.out.println("Finished correctly");
                     }
                 }catch (NullPointerException e){
                     e.printStackTrace();

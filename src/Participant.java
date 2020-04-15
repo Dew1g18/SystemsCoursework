@@ -58,6 +58,7 @@ public class Participant {
         VoteToken myvoteToken = voteTokenFromMap(sendInfo);
         VotingThread votingThread = new VotingThread(myvoteToken, details, participantLogger);
         listeningThread.start();
+        participantLogger.startedListening();
         votingThread.start();
         boolean canProceed = false;
         int count = 0; //todo: This is here to stop the round after a certain about of time, not sure if this is required
@@ -69,12 +70,14 @@ public class Participant {
                 if(listeningThread.isFinishedCollecting()&&votingThread.isFinishedVoting()){
                     canProceed=true;
                     listeningThread.setFinishedCollecting(true);
-                    Thread.sleep(10);
+                    System.out.println("finished collecting");
+                    Thread.sleep(30);
                 }
                 if (count>4){
                     canProceed = true;
                     listeningThread.setFinishedCollecting(true);
-                    Thread.sleep(10);
+                    votingThread.setFinishedVoting(true);
+                    Thread.sleep(30);
                 }
             }catch(InterruptedException e){
                 e.printStackTrace();
@@ -104,7 +107,8 @@ public class Participant {
         Map<String, String> storedP2V = sendInfo;
         int j = 100;//Upper bound for number of bounds, hardcoded for now.
         int i = 0;
-        while (storedP2V.keySet().size()<details.getOptions().length){
+        int minRuns = (details.options.length/3)+1;
+        while (storedP2V.keySet().size()<=details.getOptions().length){
             participantLogger.beginRound(i);
             sendInfo = round(thisPortSocket, details, sendInfo, storedP2V);
             storedP2V.putAll(sendInfo);
@@ -195,8 +199,10 @@ public class Participant {
             Map<String, String> outcomeMap = roundRunner(initialVote, thisPortSocket, details);
 //            System.out.println(outcomeMap.keySet()+ "\n"+ outcomeMap.values());
             OutcomeToken outcome = makeOutcome(outcomeMap);
+            participantLogger.outcomeDecided(outcome.vote);
             msgToCoord.println(outcome.requirement);
             msgToCoord.flush();
+            participantLogger.outcomeNotified(outcome.vote);
 
         }catch(IOException e){
             e.printStackTrace();
