@@ -90,7 +90,7 @@ public class Test {
         coordinatorThread.start();
 
         try {
-            ParticipantLogger.initLogger(6969, 00, 100);
+            ParticipantLogger.initLogger(6969, 00, 1000);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -107,7 +107,7 @@ public class Test {
                         String vote = Integer.toString(randomInts.nextInt(5));
 //                        ParticipantLogger.initLogger(6969, Integer.parseInt(pport), 10);
                         Participant participant = new Participant(ParticipantLogger.getLogger());
-                        participant.runParticipant(pport, "6969", vote, 100);
+                        participant.runParticipant(pport, "6969", vote, 2000);
                     }catch(Exception e){
                         e.printStackTrace();
                     }

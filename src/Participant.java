@@ -54,7 +54,7 @@ public class Participant {
             Map<String, String> sendInfo,
             Map<String,String> storedP2V
     ){ ;
-        ListeningThread listeningThread = new ListeningThread(thisPortSocket, details.getOptions().length, participantLogger);
+        ListeningThread listeningThread = new ListeningThread(thisPortSocket, details.getOptions().length, participantLogger, this.timeout);
         VoteToken myvoteToken = voteTokenFromMap(sendInfo);
         VotingThread votingThread = new VotingThread(myvoteToken, details, participantLogger);
         listeningThread.start();
@@ -68,17 +68,18 @@ public class Participant {
                 Thread.sleep(this.timeout/5);
                 count++;
                 if(listeningThread.isFinishedCollecting()&&votingThread.isFinishedVoting()){
+                    System.out.println("finished collecting");
                     canProceed=true;
                     listeningThread.setFinishedCollecting(true);
-                    System.out.println("finished collecting");
                     Thread.sleep(30);
                 }
-                if (count>4){
-                    canProceed = true;
-                    listeningThread.setFinishedCollecting(true);
-                    votingThread.setFinishedVoting(true);
-                    Thread.sleep(30);
-                }
+//                if (count>4){
+//                    System.out.println("Timeout Elapsed");
+//                    canProceed = true;
+//                    listeningThread.setFinishedCollecting(true);
+//                    votingThread.setFinishedVoting(true);
+//                    Thread.sleep(30);
+//                }
             }catch(InterruptedException e){
                 e.printStackTrace();
             }
@@ -114,13 +115,15 @@ public class Participant {
             storedP2V.putAll(sendInfo);
             participantLogger.endRound(i);
             i++;
-            if (i>j){
+//            System.out.println("Round "+i);
+            if (i>minRuns){
                 return storedP2V;
             }
         }
         return storedP2V;
     }
 
+        //TODO: Work out the correct places to implement the ParticipantCrashed method..
 
     /**
      * substitute main for use in testing.
