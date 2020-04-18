@@ -65,9 +65,8 @@ public class Participant {
         while(!canProceed){
             try {
                 Thread.sleep(this.timeout/5);
-                count++;
                 if(listeningThread.isFinishedCollecting()&&votingThread.isFinishedVoting()){
-                    System.out.println("finished collecting");
+//                    System.out.println("finished collecting");
                     canProceed=true;
                     listeningThread.setFinishedCollecting(true);
                     Thread.sleep(30);
