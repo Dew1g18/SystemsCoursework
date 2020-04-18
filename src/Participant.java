@@ -184,7 +184,8 @@ public class Participant {
 
             //todo: do we know if votes are truely supposed to be random yet?
             Random randomInts = new Random();
-            int voteNo = randomInts.nextInt(voteOptions.options.length-1);
+            int voteNo = randomInts.nextInt(voteOptions.options.length);
+            System.out.println(voteNo);
             String vote = voteOptions.options[voteNo];
             initialVote.put(thisPort, vote);
 //            System.out.println(thisPort+" "+voteStringPassedInForTest);
