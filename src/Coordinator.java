@@ -2,10 +2,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Coordinator {
 
@@ -28,39 +25,51 @@ public class Coordinator {
 
     private Map<String, PrintWriter> stored = Collections.synchronizedMap(new HashMap<String, PrintWriter>());
 
+    private String voteOptionsSave;
 
     public static void main(String[] args){
-        // args will contain the port, min connections and probably a bunch of other stuff.
-        /**
-         * Usage of Coordinator:
-         *      args[0] = number of participants.
-         */
+        int argMinPorts = Integer.parseInt(args[2]);
+        int coordPort = Integer.parseInt(args[0]);
 
-        int argMinPorts=0;
-        if (args.length==1){
-            argMinPorts = Integer.parseInt(args[0]);
+        //todo; work out how they expect us to implement the coordinators timeouts
+        int timeout = Integer.parseInt(args[3]);
+
+        int loggerPort = Integer.parseInt(args[1]);
+
+        String voteOptions = "VOTE_OPTIONS";
+        for (int i = 4; i<args.length;i++){
+            voteOptions+=args[i];
         }
+        System.out.println(voteOptions);
         try{
-            Coordinator coordinator = new Coordinator(argMinPorts);
-            coordinator.startListening(6969);
+            Coordinator coordinator = new Coordinator(argMinPorts, voteOptions);
+            coordinator.startListening(coordPort);
+            CoordinatorLogger.initLogger(loggerPort, coordPort,timeout);
 
         }catch(IOException e){
+            System.out.println("Coordinator IOException?");
             e.printStackTrace();
         }
 
 
     }
 
-    public Coordinator(int minPorts) {
+    public Coordinator(int minPorts, String voteOptions) {
         this.minPorts = minPorts;
+        this.voteOptionsSave = voteOptions;
     }
 
     public void startListening(int port) throws IOException {
         ServerSocket listener = new ServerSocket(port);
+        CoordinatorLogger.getLogger().startedListening(port);
 //        System.out.println("server socket open");
         while (true) {
             Socket client = listener.accept();
+
+            int senderParticipant = Integer.parseInt(client.getLocalSocketAddress().toString().split(":")[1]);
+            CoordinatorLogger.getLogger().connectionAccepted(senderParticipant);
 //            System.out.println("Socket accepted");
+            //todo: use timeout on the join request?
             new ServerThread(client).start();
         }
     }
@@ -127,17 +136,37 @@ public class Coordinator {
                     }
                 }
                 //This uses an integer vote from 0 to 5
-                //todo: Find out how VoteOptions are actually supposed to be implemented.
-                String voteOptions = "VOTE_OPTIONS";
-                for(int i=0;i<6;i++){
-                    voteOptions+=" "+Integer.toString(i);
-                }
 
                 portOut.println(details);
-                portOut.println(voteOptions);
+
+                String[] detailList = details.split(" ");
+                List<Integer> detInts = new ArrayList<>();
+                for(int i=1;i<detailList.length;i++){
+                    detInts.add(Integer.parseInt(detailList[i]));
+                }
+                int intPort = Integer.parseInt(thisPort);
+                CoordinatorLogger.getLogger().detailsSent(intPort, detInts);
+
+                portOut.println(voteOptionsSave);
+
+                voteOptionsSave.replaceFirst("VOTE_OPTIONS ", "");
+                List<String> votesSplit = new ArrayList<>();
+                for(String v:  voteOptionsSave.split(" ")){
+                    votesSplit.add(v);
+                }
+                CoordinatorLogger.getLogger().voteOptionsSent(intPort, votesSplit);
+
                 portOut.flush();
 
-                System.out.println(portIn.readLine());
+                String hopeOutcome= portIn.readLine();
+                System.out.println(hopeOutcome);
+                Token newToken = tokenHandler.getToken(hopeOutcome);
+                if(newToken instanceof OutcomeToken){
+                    OutcomeToken outcome = (OutcomeToken) newToken;
+                    CoordinatorLogger.getLogger().outcomeReceived(intPort,outcome.vote);
+                }
+
+
                 portSocket.close();
 
             }catch(IOException e){
@@ -165,6 +194,7 @@ public class Coordinator {
             System.out.println("Coordinator, register method");
             return false;
         }
+        CoordinatorLogger.getLogger().joinReceived(Integer.parseInt(port));
         this.numberOfConnections++;
         return true;
     }
