@@ -80,7 +80,7 @@ public class Test {
             @Override
             public void run() {
                 try {
-                    Coordinator coord = new Coordinator(numberOfParticipants);
+                    Coordinator coord = new Coordinator(numberOfParticipants, "VOTE_OPTIONS A B C");
                     coord.startListening(6969);
                 }catch(IOException e){
                     e.printStackTrace();
@@ -107,7 +107,7 @@ public class Test {
                         String vote = Integer.toString(randomInts.nextInt(5));
 //                        ParticipantLogger.initLogger(6969, Integer.parseInt(pport), 10);
                         Participant participant = new Participant(ParticipantLogger.getLogger());
-                        participant.runParticipant(pport, "6969", 2000);
+                        participant.runParticipant(pport, "6969", 500);
                     }catch(Exception e){
                         e.printStackTrace();
                     }
