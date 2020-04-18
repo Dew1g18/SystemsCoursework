@@ -142,13 +142,12 @@ public class Participant {
 
             Socket socket = new Socket(InetAddress.getLocalHost(), coordinator);
 //            System.out.println("Part opened socket at "+ coordinator);
-            //todo with PC, check to see if getlocalhost can create the sockets example connection between laptop and pc,
-            //has to be done tomorrow as I dont want to wake anyone up with my pc rn.
             PrintWriter msgToCoord = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
             BufferedReader  msgFromCoord = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             msgToCoord.println(("JOIN "+port));
             msgToCoord.flush();
             participantLogger.joinSent(Integer.parseInt(coordPort));
+            //todo: Find out if logger.messageSent is to be called for every kind of message.
 
             boolean moreToRead = true;
             TokenHandler tokenHandler = new TokenHandler();
