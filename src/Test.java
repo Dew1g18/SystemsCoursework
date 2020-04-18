@@ -107,7 +107,7 @@ public class Test {
                         String vote = Integer.toString(randomInts.nextInt(5));
 //                        ParticipantLogger.initLogger(6969, Integer.parseInt(pport), 10);
                         Participant participant = new Participant(ParticipantLogger.getLogger());
-                        participant.runParticipant(pport, "6969", vote, 2000);
+                        participant.runParticipant(pport, "6969", 2000);
                     }catch(Exception e){
                         e.printStackTrace();
                     }

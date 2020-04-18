@@ -86,6 +86,7 @@ public class Participant {
 
         Map<String, String> newInfo = new HashMap<>();
         for(VoteToken voteToken : listeningThread.getCollectedVotes()){
+//            System.out.println(voteToken.requirement);
             for(Vote vote: voteToken.voteArray){
                 if(storedP2V.get(Integer.toString(vote.getParticipantPort()))==null){
                     newInfo.put(Integer.toString(vote.getParticipantPort()), vote.getVote());
@@ -108,7 +109,8 @@ public class Participant {
         int j = 100;//Upper bound for number of bounds, hardcoded for now.
         int i = 0;
         int minRuns = (details.options.length/3)+1;
-        while (storedP2V.keySet().size()<=details.getOptions().length){
+//        while (storedP2V.keySet().size()<=details.getOptions().length){
+        while(true){
             participantLogger.beginRound(i);
             sendInfo = round(thisPortSocket, details, sendInfo, storedP2V);
             storedP2V.putAll(sendInfo);
@@ -119,7 +121,7 @@ public class Participant {
                 return storedP2V;
             }
         }
-        return storedP2V;
+//        return storedP2V;
     }
 
         //TODO: Work out the correct places to implement the ParticipantCrashed method..
