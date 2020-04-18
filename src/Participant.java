@@ -11,23 +11,22 @@ public class Participant {
     private int timeout;
 
     public static void main(String[] args){
-        if(args.length!=3){
+        if(args.length!=4){
             System.out.println("To run a participant, the usage is currently:" +
                     "\n java Participant <participant port> <coordinator port> <timeout>");
         }
         else {
             try {
-                int serverPort = Integer.parseInt(args[1]);
-                int partPort = Integer.parseInt(args[0]);
-                int timeout = Integer.parseInt(args[2]);
+//                int coordinatorPort = Integer.parseInt(args[0]);
+                int loggerPort = Integer.parseInt(args[1]);
+                int partPort = Integer.parseInt(args[2]);
+                int timeout = Integer.parseInt(args[3]);
                 
-                ParticipantLogger.initLogger(serverPort, partPort, timeout);
+                ParticipantLogger.initLogger(loggerPort, partPort, timeout);
                 ParticipantLogger pl = ParticipantLogger.getLogger();
                 Participant participant = new Participant(pl);
 
-                Random randomInts = new Random();
-                String vote = Integer.toString(randomInts.nextInt(5));
-                participant.runParticipant(args[0], args[1], vote ,timeout);
+                participant.runParticipant(args[2], args[0],timeout);
                 
             }catch (IOException e){
                 e.printStackTrace();
@@ -129,9 +128,9 @@ public class Participant {
      * substitute main for use in testing.
      * @param thisPort
      * @param coordPort
-     * @param voteStringPassedInForTest
+     * @param timeout
      */
-    public void runParticipant(String thisPort, String coordPort, String voteStringPassedInForTest, int timeout){
+    public void runParticipant(String thisPort, String coordPort, int timeout){
         try{
             this.timeout = timeout;
             DetailToken details = null;
@@ -180,7 +179,13 @@ public class Participant {
 
             ServerSocket thisPortSocket = new ServerSocket(Integer.parseInt(thisPort));
             Map<String, String> initialVote = new HashMap<>();
-            initialVote.put(thisPort, voteStringPassedInForTest);
+
+
+            //todo: do we know if votes are truely supposed to be random yet?
+            Random randomInts = new Random();
+            int voteNo = randomInts.nextInt(voteOptions.options.length-1);
+            String vote = voteOptions.options[voteNo];
+            initialVote.put(thisPort, vote);
 //            System.out.println(thisPort+" "+voteStringPassedInForTest);
 
 //            VoteToken round2 = round(thisPortSocket,round1vote, details, storedPortsToVotes);
