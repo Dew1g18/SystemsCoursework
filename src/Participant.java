@@ -208,10 +208,10 @@ public class Participant {
             Map<String, String> outcomeMap = roundRunner(initialVote, thisPortSocket, details);
 //            System.out.println(outcomeMap.keySet()+ "\n"+ outcomeMap.values());
             OutcomeToken outcome = makeOutcome(outcomeMap);
-            participantLogger.outcomeDecided(outcome.vote);
+            participantLogger.outcomeDecided(outcome.vote, outcome.portIDs());
             msgToCoord.println(outcome.requirement);
             msgToCoord.flush();
-            participantLogger.outcomeNotified(outcome.vote);
+            participantLogger.outcomeNotified(outcome.vote, outcome.portIDs());
 
         }catch(IOException e){
             e.printStackTrace();

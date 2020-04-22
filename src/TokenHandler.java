@@ -192,4 +192,12 @@ class OutcomeToken extends Token{
             this.portsConsidered[i]=tokenizer.nextToken();
         }
     }
+
+    public ArrayList<Integer> portIDs(){
+        ArrayList<Integer> arr = new ArrayList<>();
+        for(String port : portsConsidered){
+            arr.add(Integer.parseInt(port));
+        }
+        return arr;
+    }
 }
