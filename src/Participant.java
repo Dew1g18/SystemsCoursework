@@ -146,7 +146,8 @@ public class Participant {
             BufferedReader  msgFromCoord = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             msgToCoord.println(("JOIN "+port));
             msgToCoord.flush();
-            participantLogger.joinSent(Integer.parseInt(coordPort));
+            ParticipantLogger.getLogger().joinSent(Integer.parseInt(coordPort));
+            ParticipantLogger.getLogger().messageSent(coordinator, "JOIN "+port);
             //todo: Find out if logger.messageSent is to be called for every kind of message.
 
             boolean moreToRead = true;
@@ -158,17 +159,18 @@ public class Participant {
              */
             while(moreToRead){
                 incoming = msgFromCoord.readLine();
+                ParticipantLogger.getLogger().messageReceived(coordinator ,incoming);
 //                System.out.println(incoming);
 
                 Token token = tokenHandler.getToken(incoming);
                 if(token instanceof DetailToken){
                     details = (DetailToken) token;
-                    participantLogger.detailsReceived(details.detailsArray());
+                    ParticipantLogger.getLogger().detailsReceived(details.detailsArray());
 //                    System.out.println("Made a detail!");
 
                 }else if(token instanceof  VoteOptionsToken){
                     voteOptions = (VoteOptionsToken) token;
-                    participantLogger.voteOptionsReceived(voteOptions.voteOptionArray());
+                    ParticipantLogger.getLogger().voteOptionsReceived(voteOptions.voteOptionArray());
                 }
 
                 if (details!=null){
@@ -208,10 +210,11 @@ public class Participant {
             Map<String, String> outcomeMap = roundRunner(initialVote, thisPortSocket, details);
 //            System.out.println(outcomeMap.keySet()+ "\n"+ outcomeMap.values());
             OutcomeToken outcome = makeOutcome(outcomeMap);
-            participantLogger.outcomeDecided(outcome.vote, outcome.portIDs());
+            ParticipantLogger.getLogger().outcomeDecided(outcome.vote, outcome.portIDs());
             msgToCoord.println(outcome.requirement);
             msgToCoord.flush();
-            participantLogger.outcomeNotified(outcome.vote, outcome.portIDs());
+            ParticipantLogger.getLogger().outcomeNotified(outcome.vote, outcome.portIDs());
+            ParticipantLogger.getLogger().messageSent(coordinator, outcome.requirement);
 
         }catch(IOException e){
             e.printStackTrace();
