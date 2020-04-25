@@ -36,7 +36,20 @@ public class UDPLoggerClient {
 	 * @throws IOException
 	 */
 	public void logToServer(String message) throws IOException {
-		
+
+		/**
+		 * 	Checklist:
+		 * 		-send messages via udp to the logger server
+		 * 		-receive ACK reciepts
+		 * 		-send duplicate if ACk not received in time
+		 *
+		 * 		-Hold the same connection? Probably not, close at the end of this method as it will be called
+		 * 			every time someone wants to log something to the server
+		 * 		-Do this in a new thread every time it is run?
+		 * 			I say this because I don't want it holding up other processes, will have to look into how
+		 * 			the loggers work to know if this is necessary.
+		 */
+
 		// YOUR IMPLEMENTATION HERE!!
 		
 	}
