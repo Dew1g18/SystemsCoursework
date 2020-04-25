@@ -100,6 +100,10 @@ public class Coordinator {
             TokenHandler tokenHandler = new TokenHandler();
             try {
                 String in = portIn.readLine();
+
+                int intPort = getPortFromSocket(portSocket);
+
+                CoordinatorLogger.getLogger().messageReceived(intPort, in);
 //                System.out.println(in);
                 Token token = tokenHandler.getToken(in);
                 System.out.println(token.requirement);
@@ -138,16 +142,18 @@ public class Coordinator {
                 //This uses an integer vote from 0 to 5
 
                 portOut.println(details);
+                portOut.flush();
 
                 String[] detailList = details.split(" ");
                 List<Integer> detInts = new ArrayList<>();
                 for(int i=1;i<detailList.length;i++){
                     detInts.add(Integer.parseInt(detailList[i]));
                 }
-                int intPort = Integer.parseInt(thisPort);
                 CoordinatorLogger.getLogger().detailsSent(intPort, detInts);
+                CoordinatorLogger.getLogger().messageSent(intPort, details);
 
                 portOut.println(voteOptionsSave);
+                portOut.flush();
 
                 voteOptionsSave.replaceFirst("VOTE_OPTIONS ", "");
                 List<String> votesSplit = new ArrayList<>();
@@ -155,10 +161,12 @@ public class Coordinator {
                     votesSplit.add(v);
                 }
                 CoordinatorLogger.getLogger().voteOptionsSent(intPort, votesSplit);
+                CoordinatorLogger.getLogger().messageSent(intPort, voteOptionsSave);
 
-                portOut.flush();
 
                 String hopeOutcome= portIn.readLine();
+                CoordinatorLogger.getLogger().messageReceived(intPort, hopeOutcome);
+
                 System.out.println(hopeOutcome);
                 Token newToken = tokenHandler.getToken(hopeOutcome);
                 if(newToken instanceof OutcomeToken){
@@ -176,7 +184,9 @@ public class Coordinator {
         }
     }
 
-
+    public int getPortFromSocket(Socket socket){
+        return Integer.parseInt(socket.getLocalSocketAddress().toString().split(":")[1]);
+    }
 
     /**
      * The following method attempts to register a new port with the coordinator, and returns a boolean
