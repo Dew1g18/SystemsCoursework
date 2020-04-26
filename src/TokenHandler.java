@@ -187,14 +187,17 @@ class OutcomeToken extends Token{
         StringTokenizer tokenizer = new StringTokenizer(requirement);
         tokenizer.nextToken();
         this.vote = tokenizer.nextToken();
-        this.portsConsidered = new String[tokenizer.countTokens()];
-        for(int i=0; i<tokenizer.countTokens(); i++){
+        int noOfTokens = tokenizer.countTokens();
+//        System.out.println(noOfTokens);
+        this.portsConsidered = new String[noOfTokens];
+        for(int i=0; i<noOfTokens; i++){
             this.portsConsidered[i]=tokenizer.nextToken();
         }
     }
 
     public ArrayList<Integer> portIDs(){
         ArrayList<Integer> arr = new ArrayList<>();
+        System.out.println(requirement);
         for(String port : portsConsidered){
             arr.add(Integer.parseInt(port));
         }
