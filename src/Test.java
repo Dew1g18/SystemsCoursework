@@ -76,11 +76,13 @@ public class Test {
          */
 
         int numberOfParticipants = 10;
+        int timeout = 500;
         Thread coordinatorThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    Coordinator coord = new Coordinator(numberOfParticipants, "VOTE_OPTIONS A B C");
+                    Coordinator coord = new Coordinator(numberOfParticipants, "VOTE_OPTIONS A B C",timeout);
+                    CoordinatorLogger.initLogger(12345, 6969, timeout);
                     coord.startListening(6969);
                 }catch(IOException e){
                     e.printStackTrace();
@@ -90,7 +92,7 @@ public class Test {
         coordinatorThread.start();
 
         try {
-            ParticipantLogger.initLogger(6969, 00, 1000);
+            ParticipantLogger.initLogger(6969, 00, timeout);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -107,7 +109,7 @@ public class Test {
                         String vote = Integer.toString(randomInts.nextInt(5));
 //                        ParticipantLogger.initLogger(6969, Integer.parseInt(pport), 10);
                         Participant participant = new Participant(ParticipantLogger.getLogger());
-                        participant.runParticipant(pport, "6969", 500);
+                        participant.runParticipant(pport, "6969", timeout);
                     }catch(Exception e){
                         e.printStackTrace();
                     }

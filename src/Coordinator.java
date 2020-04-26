@@ -23,6 +23,8 @@ public class Coordinator {
 
     private int numberOfConnections = 0;
 
+    public int timeout;
+
     private Map<String, PrintWriter> stored = Collections.synchronizedMap(new HashMap<String, PrintWriter>());
 
     private String voteOptionsSave;
@@ -42,9 +44,9 @@ public class Coordinator {
         }
         System.out.println(voteOptions);
         try{
-            Coordinator coordinator = new Coordinator(argMinPorts, voteOptions);
-            coordinator.startListening(coordPort);
+            Coordinator coordinator = new Coordinator(argMinPorts, voteOptions, timeout);
             CoordinatorLogger.initLogger(loggerPort, coordPort,timeout);
+            coordinator.startListening(coordPort);
 
         }catch(IOException e){
             System.out.println("Coordinator IOException?");
@@ -54,9 +56,10 @@ public class Coordinator {
 
     }
 
-    public Coordinator(int minPorts, String voteOptions) {
+    public Coordinator(int minPorts, String voteOptions, int timeout) {
         this.minPorts = minPorts;
         this.voteOptionsSave = voteOptions;
+        this.timeout = timeout;
     }
 
     public void startListening(int port) throws IOException {
@@ -126,7 +129,7 @@ public class Coordinator {
                         break;
                     }else{
                         try {
-                            this.sleep(1000);
+                            this.sleep(timeout/2);
                         }catch(InterruptedException e){
                             e.printStackTrace();
                         }
