@@ -51,7 +51,6 @@ public class ListeningThread extends Thread {
          * the set of votes is complete.
          */
         while(!finishedCollecting) {
-            //todo: implement participant timeout
             try {
                 voter = listeningPort.accept();
                 int senderParticipant = Integer.parseInt(voter.getLocalSocketAddress().toString().split(":")[1]);

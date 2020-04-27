@@ -54,7 +54,6 @@ public class UDPLoggerServer {
         byte[] buf = "ACK".getBytes();
         DatagramSocket socket = new DatagramSocket(socketAddress);
         serverSocket.send(new DatagramPacket(buf, buf.length, socket.getInetAddress(), socket.getLocalPort()));
-        //todo check that the getLocalPort() method actually works becuae I have no idea what I'm supposed to be using here
     }
 
     public boolean log(DatagramPacket packet){
@@ -68,11 +67,15 @@ public class UDPLoggerServer {
         }
     }
 
+    /** Will run this entire logger on one thread, as packets should wait on the line and if the delivery would
+     *  fail, it will be sent again as is the nature of the udp process.
+    */
     private void startListening(int port) throws IOException {
         DatagramSocket server = new DatagramSocket(port);
         byte[] buff = new byte[256];
         DatagramPacket packet = new DatagramPacket(buff, buff.length);
         while(true){
+            // Logs and acknowledges packet IFF its not been received before
             server.receive(packet);
             if(log(packet)){
                 acknowledge(packet.getSocketAddress());
