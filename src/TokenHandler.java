@@ -197,7 +197,7 @@ class OutcomeToken extends Token{
 
     public ArrayList<Integer> portIDs(){
         ArrayList<Integer> arr = new ArrayList<>();
-        System.out.println(requirement);
+//        System.out.println(requirement);
         for(String port : portsConsidered){
             arr.add(Integer.parseInt(port));
         }

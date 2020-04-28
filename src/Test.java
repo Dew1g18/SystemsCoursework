@@ -75,7 +75,7 @@ public class Test {
          *
          */
 
-        int numberOfParticipants = 10;
+        int numberOfParticipants = 5;
         int timeout = 500;
         Thread coordinatorThread = new Thread(new Runnable() {
             @Override
@@ -106,7 +106,7 @@ public class Test {
                 public void run() {
                     try {
                         String pport = Integer.toString(1070 + finalI);
-                        String vote = Integer.toString(randomInts.nextInt(5));
+//                        String vote = Integer.toString(randomInts.nextInt(3));
 //                        ParticipantLogger.initLogger(6969, Integer.parseInt(pport), 10);
                         Participant participant = new Participant(ParticipantLogger.getLogger());
                         participant.runParticipant(pport, "6969", timeout);

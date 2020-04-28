@@ -54,38 +54,79 @@ public class ListeningThread extends Thread {
             try {
                 voter = listeningPort.accept();
                 int senderParticipant = Integer.parseInt(voter.getLocalSocketAddress().toString().split(":")[1]);
-
                 pl.connectionAccepted(senderParticipant);
-                try {
-                    voter.setSoTimeout(timeout);//todo, check this use of timeout. Pretty sure now though
-//                System.out.println(senderParticipant);
-//                System.out.println(voter.getLocalSocketAddress().toString().replace("\127"));
-                    voterInput = new BufferedReader(new InputStreamReader(voter.getInputStream()));
-
-                    String req = voterInput.readLine();
-                    Token token = tokenHandler.getToken(req);
-                    pl.messageReceived(senderParticipant, token.requirement);
-//                System.out.println(req);
-                    if (token instanceof VoteToken) {
-                        VoteToken voteToken = (VoteToken) token;
-//                    System.out.println("/////////"+voter.getPort());
-                        pl.votesReceived(senderParticipant, voteToken.voteArrayList());
 
 
-                        collectedVotes.add(voteToken);
-//                    System.out.println(voteToken.requirement+" added");
-                        portToVote.put(voteToken.ports, voteToken.votes);
-                    }
-                    if (waitNo == collectedVotes.size()) {
-                        finishedCollecting = true;
-//                            System.out.println("Finished correctly");
-                    }
-                }catch(SocketTimeoutException e){
-                    pl.participantCrashed(senderParticipant);
-                }
+                //Running listen in new thread, comment and swap for below to go back to single threaded listening
+//                Socket finalVoter = voter;
+//                Thread thread = new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        try {
+//                            receive(finalVoter);
+//                        }catch(IOException e){
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                });
+//                thread.start();
+
+
+
+                receive(voter);
+
+
+//                try {
+//                    voter.setSoTimeout(timeout);
+//                    //todo, check this use of timeout. Pretty sure now though
+//
+//                    voterInput = new BufferedReader(new InputStreamReader(voter.getInputStream()));
+//
+//                    String req = voterInput.readLine();
+//                    Token token = tokenHandler.getToken(req);
+//                    pl.messageReceived(senderParticipant, token.requirement);
+//                    if (token instanceof VoteToken) {
+//                        VoteToken voteToken = (VoteToken) token;
+//                        pl.votesReceived(senderParticipant, voteToken.voteArrayList());
+//
+//                        collectedVotes.add(voteToken);
+//                        portToVote.put(voteToken.ports, voteToken.votes);
+//                    }
+//                    if (waitNo == collectedVotes.size()) {
+//                        finishedCollecting = true;
+//                    }
+//                }catch(SocketTimeoutException e){
+//                    pl.participantCrashed(senderParticipant);
+//                }
             }catch(IOException e){
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void receive(Socket voter) throws IOException{
+        int senderParticipant = voter.getLocalPort();
+        try {
+            voter.setSoTimeout(timeout);
+            //todo, check this use of timeout. Pretty sure now though
+            TokenHandler tokenHandler = new TokenHandler();
+            BufferedReader voterInput = new BufferedReader(new InputStreamReader(voter.getInputStream()));
+
+            String req = voterInput.readLine();
+            Token token = tokenHandler.getToken(req);
+            pl.messageReceived(senderParticipant, token.requirement);
+            if (token instanceof VoteToken) {
+                VoteToken voteToken = (VoteToken) token;
+                pl.votesReceived(senderParticipant, voteToken.voteArrayList());
+
+                collectedVotes.add(voteToken);
+                portToVote.put(voteToken.ports, voteToken.votes);
+            }
+            if (waitNo == collectedVotes.size()) {
+                finishedCollecting = true;
+            }
+        }catch(SocketTimeoutException e){
+            pl.participantCrashed(senderParticipant);
         }
     }
 

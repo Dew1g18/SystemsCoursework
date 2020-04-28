@@ -69,7 +69,7 @@ public class UDPLoggerServer {
 
     /** Will run this entire logger on one thread, as packets should wait on the line and if the delivery would
      *  fail, it will be sent again as is the nature of the udp process.
-    */
+     */
     private void startListening(int port) throws IOException {
         DatagramSocket server = new DatagramSocket(port);
         byte[] buff = new byte[256];

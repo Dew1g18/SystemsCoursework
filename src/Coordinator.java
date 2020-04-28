@@ -109,7 +109,7 @@ public class Coordinator {
                 CoordinatorLogger.getLogger().messageReceived(intPort, in);
 //                System.out.println(in);
                 Token token = tokenHandler.getToken(in);
-                System.out.println(token.requirement);
+                System.out.println(token.requirement+"  //Join?");
                 if (!(token instanceof JoinToken)) {
                     portSocket.close();
                     return;
