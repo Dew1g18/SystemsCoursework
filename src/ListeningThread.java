@@ -32,6 +32,9 @@ public class ListeningThread extends Thread {
     }
 
     public boolean isFinishedCollecting() {
+        if (collectedVotes.size()==waitNo){
+            setFinishedCollecting(true);
+        }
         return finishedCollecting;
     }
 
@@ -57,47 +60,13 @@ public class ListeningThread extends Thread {
                 pl.connectionAccepted(senderParticipant);
 
 
-                //Running listen in new thread, comment and swap for below to go back to single threaded listening
-//                Socket finalVoter = voter;
-//                Thread thread = new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        try {
-//                            receive(finalVoter);
-//                        }catch(IOException e){
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                });
-//                thread.start();
+
+                Socket finalVoter = voter;
+                new Thread(() -> receiveNoExc(finalVoter)).start();
+
+//                receive(voter);
 
 
-
-                receive(voter);
-
-
-//                try {
-//                    voter.setSoTimeout(timeout);
-//                    //todo, check this use of timeout. Pretty sure now though
-//
-//                    voterInput = new BufferedReader(new InputStreamReader(voter.getInputStream()));
-//
-//                    String req = voterInput.readLine();
-//                    Token token = tokenHandler.getToken(req);
-//                    pl.messageReceived(senderParticipant, token.requirement);
-//                    if (token instanceof VoteToken) {
-//                        VoteToken voteToken = (VoteToken) token;
-//                        pl.votesReceived(senderParticipant, voteToken.voteArrayList());
-//
-//                        collectedVotes.add(voteToken);
-//                        portToVote.put(voteToken.ports, voteToken.votes);
-//                    }
-//                    if (waitNo == collectedVotes.size()) {
-//                        finishedCollecting = true;
-//                    }
-//                }catch(SocketTimeoutException e){
-//                    pl.participantCrashed(senderParticipant);
-//                }
             }catch(IOException e){
                 e.printStackTrace();
             }
@@ -112,21 +81,33 @@ public class ListeningThread extends Thread {
             TokenHandler tokenHandler = new TokenHandler();
             BufferedReader voterInput = new BufferedReader(new InputStreamReader(voter.getInputStream()));
 
+
             String req = voterInput.readLine();
+            System.out.println(req);
+
             Token token = tokenHandler.getToken(req);
             pl.messageReceived(senderParticipant, token.requirement);
             if (token instanceof VoteToken) {
+//                if(((VoteToken) token).voteArray.length==0){
+//                    finishedCollecting = true;
+//                }
                 VoteToken voteToken = (VoteToken) token;
                 pl.votesReceived(senderParticipant, voteToken.voteArrayList());
 
                 collectedVotes.add(voteToken);
                 portToVote.put(voteToken.ports, voteToken.votes);
             }
-            if (waitNo == collectedVotes.size()) {
-                finishedCollecting = true;
-            }
         }catch(SocketTimeoutException e){
+            System.out.println("Participant "+senderParticipant+" has crashed");
             pl.participantCrashed(senderParticipant);
+        }
+    }
+
+    public void receiveNoExc(Socket voter){
+        try{
+            receive(voter);
+        }catch (IOException e){
+            e.printStackTrace();
         }
     }
 

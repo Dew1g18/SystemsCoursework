@@ -56,28 +56,35 @@ public class Participant {
         ListeningThread listeningThread = new ListeningThread(thisPortSocket, details.getOptions().length, participantLogger, this.timeout);
         VoteToken myvoteToken = voteTokenFromMap(sendInfo);
         VotingThread votingThread = new VotingThread(myvoteToken, details, participantLogger);
+        votingThread.start();
         listeningThread.start();
         participantLogger.startedListening();
-        votingThread.start();
         boolean canProceed = false;
         int count = 0; //todo: This is here to stop the round after a certain about of time, not sure if this is required
 
         while(!canProceed){
             try {
-                Thread.sleep(this.timeout/5);
+
                 if(listeningThread.isFinishedCollecting()&&votingThread.isFinishedVoting()){
 //                    System.out.println("finished collecting");
+//                    System.out.println("Voting finished: "+votingThread.isFinishedVoting()+"    All collected: "+listeningThread.isFinishedCollecting());
+
                     canProceed=true;
                     listeningThread.setFinishedCollecting(true);
-                    Thread.sleep(30);
                 }
-//                if (count>4){
+                count++;
+                if (count>4){
 //                    System.out.println("Timeout Elapsed");
-//                    canProceed = true;
-//                    listeningThread.setFinishedCollecting(true);
-//                    votingThread.setFinishedVoting(true);
-//                    Thread.sleep(30);
-//                }
+
+//                    System.out.println("Voting finished: "+votingThread.isFinishedVoting()+"    All collected: "+listeningThread.isFinishedCollecting());
+                    canProceed = true;
+//                    System.out.println(listeningThread.getCollectedVotes());
+                    listeningThread.setFinishedCollecting(true);
+                    votingThread.setFinishedVoting(true);
+                }
+
+                Thread.sleep(this.timeout/4);
+
             }catch(InterruptedException e){
                 e.printStackTrace();
             }
@@ -89,6 +96,7 @@ public class Participant {
             for(Vote vote: voteToken.voteArray){
                 if(storedP2V.get(Integer.toString(vote.getParticipantPort()))==null){
                     newInfo.put(Integer.toString(vote.getParticipantPort()), vote.getVote());
+//                    System.out.println(vote.toString());
                 }
             }
         }
@@ -113,10 +121,13 @@ public class Participant {
             participantLogger.beginRound(i);
             sendInfo = round(thisPortSocket, details, sendInfo, storedP2V);
             storedP2V.putAll(sendInfo);
+//            System.out.println("Round: "+i);
             participantLogger.endRound(i);
+//            System.out.println("cont");
             i++;
 //            System.out.println("Round "+i);
             if (i>minRuns){
+//                System.out.println(minRuns+" rounds complete");
                 return storedP2V;
             }
         }

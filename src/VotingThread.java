@@ -32,46 +32,72 @@ public class VotingThread extends Thread {
     }
 
     public void run(){
-        Socket socket;
-        try{
-            this.sleep(1000);
-            }catch(InterruptedException e){
-            e.printStackTrace();
-        }
+//        System.out.println(voteToken.requirement);
+//        try{
+//            this.sleep(1000);
+//            }catch(InterruptedException e){
+//            e.printStackTrace();
+//        }
 //        try {
             for (String port : details.getOptions()) {
-                while(true) {
+
+//                while(true) {
                     int portInt = Integer.parseInt(port);
-                    try {
-                        socket = new Socket(InetAddress.getLocalHost(), portInt);
-                        PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-                        pl.connectionEstablished(portInt);
-                        out.println(voteToken.requirement);
-                        out.flush();
-                        pl.votesSent(portInt, voteToken.voteArrayList());
-                        pl.messageSent(portInt, voteToken.requirement);
-//                        System.out.println(voteToken.ports + "VoteToken");
-                        break;
-                    }catch(Exception e){
-                        try{
-                            this.sleep(50);
-                        }catch(InterruptedException f){
-                            f.printStackTrace();
-                        }
-                        pl.participantCrashed(portInt);
-                        if(finishedVoting){
-                            break;
-                        }
-                        System.out.println("Failed connection");
-                        continue;
-                    }
-                }
+
+                    new Thread(()->voteOnPort(portInt)).start();
+
+//                    try {
+//                        socket = new Socket(InetAddress.getLocalHost(), portInt);
+//                        PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+//                        pl.connectionEstablished(portInt);
+//                        out.println(voteToken.requirement);
+//                        out.flush();
+//                        pl.votesSent(portInt, voteToken.voteArrayList());
+//                        pl.messageSent(portInt, voteToken.requirement);
+////                        System.out.println(voteToken.ports + "VoteToken");
+//                        break;
+//                    }catch(Exception e){
+//                        pl.participantCrashed(portInt);
+//                        if(finishedVoting){
+//                            break;
+//                        }
+//                        System.out.println("Failed connection");
+//                        continue;
+//                    }
+//                }
             }
             finishedVoting=true;
 //        }catch (IOException e){
 //            e.printStackTrace();
 //        }
 
+    }
+
+    public boolean voteOnPort(int portInt) {
+        boolean notConnected = true;
+        while (notConnected) {
+            try {
+                Socket socket = new Socket(InetAddress.getLocalHost(), portInt);
+                PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+                notConnected = false;
+                pl.connectionEstablished(portInt);
+                out.println(voteToken.requirement);
+                out.flush();
+                pl.votesSent(portInt, voteToken.voteArrayList());
+                pl.messageSent(portInt, voteToken.requirement);
+//                        System.out.println(voteToken.ports + "VoteToken");
+                return false;
+            } catch (Exception e) {
+//                e.printStackTrace();
+                pl.participantCrashed(portInt);
+                if (finishedVoting) {
+                    return false;
+                }
+                System.out.println("Failed connection");
+                return true;
+            }
+        }
+        return true;
     }
 
 

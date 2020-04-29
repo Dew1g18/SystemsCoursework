@@ -126,7 +126,7 @@ public class Coordinator {
                         break;
                     }else{
                         try {
-                            this.sleep(timeout/2);
+                            this.sleep(timeout/100);
                         }catch(InterruptedException e){
                             e.printStackTrace();
                         }

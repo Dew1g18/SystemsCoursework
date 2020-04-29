@@ -75,7 +75,7 @@ public class Test {
          *
          */
 
-        int numberOfParticipants = 5;
+        int numberOfParticipants = 10;
         int timeout = 500;
         Thread coordinatorThread = new Thread(new Runnable() {
             @Override
