@@ -83,10 +83,11 @@ public class Coordinator {
         private String portName;
         private BufferedReader portIn;
         private PrintWriter portOut;
+        private int portNumber;
 
         ServerThread(Socket port) throws IOException {
             portSocket= port;
-
+            this.portNumber = port.getLocalPort();
             portIn = new BufferedReader(new InputStreamReader(port.getInputStream()));
             portOut = new PrintWriter(new OutputStreamWriter(port.getOutputStream()));
 //            System.out.println("ServerThread started");
@@ -178,6 +179,7 @@ public class Coordinator {
                 portSocket.close();
 
             }catch(IOException e){
+                CoordinatorLogger.getLogger().participantCrashed(portNumber);
                 e.printStackTrace();
 
             }

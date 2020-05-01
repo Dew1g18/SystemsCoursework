@@ -1,4 +1,7 @@
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.ServerSocket;
 
 public class UDPLoggerClient {
 	
@@ -37,6 +40,11 @@ public class UDPLoggerClient {
 	 */
 	public void logToServer(String message) throws IOException {
 
+//		new Thread(()-> log(message)).start();
+		//This threaded version of the log doesnt work at the moment becuae I have to work out how to get it to throw the IOException.
+//		Thread thread = new Thread(() -> log(message))
+		log(message);
+
 		/**
 		 * 	Checklist:
 		 * 		-send messages via udp to the logger server
@@ -52,5 +60,11 @@ public class UDPLoggerClient {
 
 		// YOUR IMPLEMENTATION HERE!!
 		
+	}
+
+	private void log(String message) throws IOException {
+		byte[] buf = "ACK".getBytes();
+		DatagramSocket socket = new DatagramSocket(loggerServerPort);
+//		ServerSocket.send(new DatagramPacket(buf, buf.length, socket.getInetAddress(), socket.getLocalPort()));
 	}
 }
