@@ -187,7 +187,7 @@ public class Participant {
 
                 if (details!=null){
                     if(voteOptions!=null){
-                    moreToRead=false;
+                        moreToRead=false;
                 }}
             }
 

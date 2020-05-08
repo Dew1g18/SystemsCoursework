@@ -42,6 +42,7 @@ public class Coordinator {
 
         String voteOptions = "VOTE_OPTIONS";
         for (int i = 4; i<args.length;i++){
+            voteOptions+=" ";
             voteOptions+=args[i];
         }
         System.out.println(voteOptions);
@@ -77,6 +78,7 @@ public class Coordinator {
 //            System.out.println("Socket accepted");
             //todo: use timeout on the join request?
             new ServerThread(client).start();
+
         }
     }
 
@@ -155,8 +157,9 @@ public class Coordinator {
                 }
                 coordinatorLogger.detailsSent(intPort, detInts);
                 coordinatorLogger.messageSent(intPort, details);
-
+                System.out.println("Send votes");
                 portOut.println(voteOptionsSave);
+                System.out.println("sent votes");
                 portOut.flush();
 
                 voteOptionsSave.replaceFirst("VOTE_OPTIONS ", "");
