@@ -29,6 +29,8 @@ public class Coordinator {
 
     private String voteOptionsSave;
 
+    public CLoggerThreaded coordinatorLogger;
+
     public static void main(String[] args){
         int argMinPorts = Integer.parseInt(args[2]);
         int coordPort = Integer.parseInt(args[0]);
@@ -57,6 +59,7 @@ public class Coordinator {
     }
 
     public Coordinator(int minPorts, String voteOptions, int timeout) {
+        this.coordinatorLogger = new CLoggerThreaded();
         this.minPorts = minPorts;
         this.voteOptionsSave = voteOptions;
         this.timeout = timeout;
@@ -64,13 +67,13 @@ public class Coordinator {
 
     public void startListening(int port) throws IOException {
         ServerSocket listener = new ServerSocket(port);
-        CoordinatorLogger.getLogger().startedListening(port);
+        coordinatorLogger.startedListening(port);
 //        System.out.println("server socket open");
         while (true) {
             Socket client = listener.accept();
 
             int senderParticipant = Integer.parseInt(client.getLocalSocketAddress().toString().split(":")[1]);
-            CoordinatorLogger.getLogger().connectionAccepted(senderParticipant);
+            coordinatorLogger.connectionAccepted(senderParticipant);
 //            System.out.println("Socket accepted");
             //todo: use timeout on the join request?
             new ServerThread(client).start();
@@ -107,7 +110,7 @@ public class Coordinator {
 
                 int intPort = getPortFromSocket(portSocket);
 
-                CoordinatorLogger.getLogger().messageReceived(intPort, in);
+                coordinatorLogger.messageReceived(intPort, in);
 //                System.out.println(in);
                 Token token = tokenHandler.getToken(in);
                 System.out.println(token.requirement+"  //Join?");
@@ -150,8 +153,8 @@ public class Coordinator {
                 for(int i=1;i<detailList.length;i++){
                     detInts.add(Integer.parseInt(detailList[i]));
                 }
-                CoordinatorLogger.getLogger().detailsSent(intPort, detInts);
-                CoordinatorLogger.getLogger().messageSent(intPort, details);
+                coordinatorLogger.detailsSent(intPort, detInts);
+                coordinatorLogger.messageSent(intPort, details);
 
                 portOut.println(voteOptionsSave);
                 portOut.flush();
@@ -161,25 +164,25 @@ public class Coordinator {
                 for(String v:  voteOptionsSave.split(" ")){
                     votesSplit.add(v);
                 }
-                CoordinatorLogger.getLogger().voteOptionsSent(intPort, votesSplit);
-                CoordinatorLogger.getLogger().messageSent(intPort, voteOptionsSave);
+                coordinatorLogger.voteOptionsSent(intPort, votesSplit);
+                coordinatorLogger.messageSent(intPort, voteOptionsSave);
 
 
                 String hopeOutcome= portIn.readLine();
-                CoordinatorLogger.getLogger().messageReceived(intPort, hopeOutcome);
+                coordinatorLogger.messageReceived(intPort, hopeOutcome);
 
                 System.out.println(hopeOutcome);
                 Token newToken = tokenHandler.getToken(hopeOutcome);
                 if(newToken instanceof OutcomeToken){
                     OutcomeToken outcome = (OutcomeToken) newToken;
-                    CoordinatorLogger.getLogger().outcomeReceived(intPort,outcome.vote);
+                    coordinatorLogger.outcomeReceived(intPort,outcome.vote);
                 }
 
 
                 portSocket.close();
 
             }catch(IOException e){
-                CoordinatorLogger.getLogger().participantCrashed(portNumber);
+                coordinatorLogger.participantCrashed(portNumber);
                 e.printStackTrace();
 
             }
@@ -206,7 +209,7 @@ public class Coordinator {
             System.out.println("Coordinator, register method");
             return false;
         }
-        CoordinatorLogger.getLogger().joinReceived(Integer.parseInt(port));
+        coordinatorLogger.joinReceived(Integer.parseInt(port));
         this.numberOfConnections++;
         return true;
     }
