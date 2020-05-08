@@ -10,7 +10,7 @@ public class VotingThread extends Thread {
 //    private Socket mySocket;
     private VoteToken voteToken;
     private boolean finishedVoting;
-    private ParticipantLogger pl;
+    private PLoggerThreaded pl;
 
     public boolean isFinishedVoting() {
         return finishedVoting;
@@ -18,7 +18,7 @@ public class VotingThread extends Thread {
 
     private DetailToken details;
 
-    public VotingThread(VoteToken voteToken, DetailToken detailToken, ParticipantLogger pl){
+    public VotingThread(VoteToken voteToken, DetailToken detailToken, PLoggerThreaded pl){
 //        this.mySocket = socket;
         this.voteToken = voteToken;
 //        System.out.println(voteToken.requirement);

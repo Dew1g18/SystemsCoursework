@@ -15,10 +15,10 @@ public class ListeningThread extends Thread {
     private ArrayList<VoteToken> collectedVotes;
     private boolean finishedCollecting;
     private Map<String[], String[]> portToVote;
-    private ParticipantLogger pl;
+    private PLoggerThreaded pl;
     private int timeout;
 
-    public ListeningThread(ServerSocket socket, int waitNo, ParticipantLogger pl, int timeout){
+    public ListeningThread(ServerSocket socket, int waitNo, PLoggerThreaded pl, int timeout){
         this.portToVote = new HashMap<>();
         this.timeout = timeout;
         this.collectedVotes = new ArrayList<>();

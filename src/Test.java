@@ -108,7 +108,7 @@ public class Test {
                         String pport = Integer.toString(1070 + finalI);
 //                        String vote = Integer.toString(randomInts.nextInt(3));
 //                        ParticipantLogger.initLogger(6969, Integer.parseInt(pport), 10);
-                        Participant participant = new Participant(ParticipantLogger.getLogger());
+                        Participant participant = new Participant();
                         participant.runParticipant(pport, "6969", timeout);
                     }catch(Exception e){
                         e.printStackTrace();

@@ -61,7 +61,7 @@ public class UDPLoggerServer {
         if (!Arrays.asList(receivedMessages).contains(in)){
             //todo here is where I need to handle the message that came in and actually log it lmao
             receivedMessages.add(in);
-                return true;
+            return true;
         }else{
             return false;
         }
