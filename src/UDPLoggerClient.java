@@ -11,7 +11,7 @@ public class UDPLoggerClient {
 	private final int loggerServerPort;
 	private final int processId;
 	private final int timeout;
-	private ArrayList<String> queue;
+	private DatagramSocket sender;
 
 	/**
 	 * @param loggerServerPort the UDP port where the Logger process is listening o
@@ -22,7 +22,12 @@ public class UDPLoggerClient {
 		this.loggerServerPort = loggerServerPort;
 		this.processId = processId;
 		this.timeout = timeout;
-		this.queue = new ArrayList<>();
+		try {
+			this.sender = new DatagramSocket();
+		}catch (IOException e){
+			System.out.println("LOGGER CLIENT INITIALISATION FAIL");
+			e.printStackTrace();
+		}
 	}
 	
 	public int getLoggerServerPort() {
@@ -44,27 +49,9 @@ public class UDPLoggerClient {
 	 * @throws IOException
 	 */
 	public void logToServer(String message) throws IOException {
-		queue.add(message);
 
 		//Not threaded
-//		for (int i=0;i<2;i++){
-//			try{
-//				//todo: get ack, try 3 times, on 4 send IOExc
-//				if (receive(log(message))) {
-//					break;
-//				}
-//			}catch (IOException e){
-//				continue;
-//			}
-//		}
-//		receive(log(message));
-
-
-	}
-
-
-	private void tryLog(String message){
-		for (int i=0;i<3;i++){
+		for (int i=0;i<2;i++){
 			try{
 				if (receive(log(message))) {
 					break;
@@ -73,7 +60,23 @@ public class UDPLoggerClient {
 				continue;
 			}
 		}
+		receive(log(message));
+
+
 	}
+
+//
+//	private void tryLog(String message){
+//		for (int i=0;i<3;i++){
+//			try{
+//				if (receive(log(message))) {
+//					break;
+//				}
+//			}catch (IOException e){
+//				continue;
+//			}
+//		}
+//	}
 
 	/**
 	 * 	Checklist:
@@ -90,7 +93,7 @@ public class UDPLoggerClient {
 
 	private boolean receive(DatagramSocket socket) throws IOException{
 		byte[] buff = new byte[265];
-		socket.setSoTimeout(timeout);
+		socket.setSoTimeout(getTimeout());
 		socket.receive(new DatagramPacket(buff, buff.length));
 		return true;
 	}
@@ -98,9 +101,8 @@ public class UDPLoggerClient {
 
 	private DatagramSocket log(String message) throws IOException {
 		byte[] buf = message.getBytes();
-		DatagramSocket socket = new DatagramSocket(loggerServerPort);
-		DatagramSocket here = new DatagramSocket(processId);
-		here.send(new DatagramPacket(buf, buf.length, socket.getInetAddress(), socket.getLocalPort()));
-		return here;
+		DatagramSocket socket = new DatagramSocket(getLoggerServerPort());
+		sender.send(new DatagramPacket(buf, buf.length, socket.getInetAddress(), socket.getLocalPort()));
+		return sender;
 	}
 }
