@@ -94,9 +94,14 @@ public class UDPLoggerClient {
 
 	private boolean receive(DatagramSocket socket) throws IOException{
 		byte[] buff = new byte[256];
+//		try{
+//			Thread.sleep(timeout/5);
+//		}catch(InterruptedException e){
+//			//never gets caught
+//		}
 		socket.setSoTimeout(getTimeout());
 		socket.receive(new DatagramPacket(buff, buff.length));
-		System.out.println("ACK");
+//		System.out.println("ACK");
 		return true;
 	}
 
