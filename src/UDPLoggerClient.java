@@ -3,6 +3,7 @@ import sun.awt.windows.ThemeReader;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 
@@ -92,17 +93,17 @@ public class UDPLoggerClient {
 	 */
 
 	private boolean receive(DatagramSocket socket) throws IOException{
-		byte[] buff = new byte[265];
+		byte[] buff = new byte[256];
 		socket.setSoTimeout(getTimeout());
 		socket.receive(new DatagramPacket(buff, buff.length));
+		System.out.println("ACK");
 		return true;
 	}
 
 
 	private DatagramSocket log(String message) throws IOException {
 		byte[] buf = message.getBytes();
-		DatagramSocket socket = new DatagramSocket(getLoggerServerPort());
-		sender.send(new DatagramPacket(buf, buf.length, socket.getInetAddress(), socket.getLocalPort()));
+		sender.send(new DatagramPacket(buf, buf.length, InetAddress.getLocalHost(),getLoggerServerPort()));
 		return sender;
 	}
 }

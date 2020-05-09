@@ -157,9 +157,9 @@ public class Coordinator {
                 }
                 coordinatorLogger.detailsSent(intPort, detInts);
                 coordinatorLogger.messageSent(intPort, details);
-                System.out.println("Send votes");
+//                System.out.println("Send votes");
                 portOut.println(voteOptionsSave);
-                System.out.println("sent votes");
+//                System.out.println("sent votes");
                 portOut.flush();
 
                 voteOptionsSave.replaceFirst("VOTE_OPTIONS ", "");
