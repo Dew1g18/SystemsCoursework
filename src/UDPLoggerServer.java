@@ -6,9 +6,6 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringTokenizer;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Writing this to get my head straight about how this is going to work.
@@ -49,10 +46,9 @@ public class UDPLoggerServer {
 
 
     //This was only written to understand how datagrams worked tbh, but I'm sure it'll come in handy
-    public void acknowledge(SocketAddress socketAddress) throws IOException{
+    public void acknowledge(DatagramPacket packet) throws IOException{
         byte[] buf = "ACK".getBytes();
-        DatagramSocket socket = new DatagramSocket(socketAddress);
-        serverSocket.send(new DatagramPacket(buf, buf.length, socket.getInetAddress(), socket.getLocalPort()));
+        serverSocket.send(new DatagramPacket(buf, buf.length, packet.getAddress(), packet.getPort()));
     }
 
     /**
@@ -95,7 +91,7 @@ public class UDPLoggerServer {
             try {
                 this.serverSocket.receive(packet);
                 if (log(packet)) {
-                    acknowledge(packet.getSocketAddress());
+                    acknowledge(packet);
                 }
             }catch(IOException e){
 //                e.printStackTrace();
