@@ -1,11 +1,7 @@
-import sun.awt.windows.ThemeReader;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.util.ArrayList;
 
 public class UDPLoggerClient {
 	
