@@ -1,5 +1,6 @@
 
 import java.io.*;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -149,8 +150,15 @@ public class Participant {
 
             int port = Integer.parseInt(thisPort);
             int coordinator = Integer.parseInt(coordPort);
-
-            Socket socket = new Socket(InetAddress.getLocalHost(), coordinator);
+            Socket socket;
+            while(true) {
+                try {
+                    socket = new Socket(InetAddress.getLocalHost(), coordinator);
+                    break;
+                }catch(ConnectException e){
+                    continue;
+                }
+            }
 //            System.out.println("Part opened socket at "+ coordinator);
             PrintWriter msgToCoord = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
             BufferedReader  msgFromCoord = new BufferedReader(new InputStreamReader(socket.getInputStream()));

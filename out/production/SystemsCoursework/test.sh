@@ -5,9 +5,7 @@
 #run
 java UDPLoggerServer 12344 &
 echo " Waiting for logger server to start ..."
-sleep 5
-java Coordinator 12345 12344 10 500 A B &
-echo " Waiting for coordinator to start ..."
+
 sleep 5
 java Participant 12345 12344 12346 500 &
 sleep 1
@@ -29,3 +27,6 @@ sleep 1
 java Participant 12345 12344 12354 500 &
 sleep 1
 java Participant 12345 12344 12355 500 &
+sleep 5
+java Coordinator 12345 12344 10 500 A B &
+echo " Waiting for coordinator to start ..."
