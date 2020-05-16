@@ -115,7 +115,7 @@ public class Participant {
         int j = 100;//Upper bound for number of bounds, hardcoded for now.
         int i = 0;
 //        int minRuns = ((details.options.length+1)/3)+1;
-        int minRuns = (details.options.length+1);
+        int minRuns = (details.options.length+2);
 //        while (storedP2V.keySet().size()<=details.getOptions().length){
         while(true){
             participantLogger.beginRound(i);
